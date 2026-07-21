@@ -35,14 +35,15 @@ Deno.serve(async (request) => {
     const action = body.action;
 
     if (action === "bootstrap") {
-      const [settings, cars, payrollEntries, credentials] = await Promise.all([
+      const [settings, cars, payrollEntries, credentials, leaders] = await Promise.all([
         serviceJson("/rest/v1/app_settings?key=eq.hourly_rate&select=value&limit=1"),
         serviceJson("/rest/v1/car_assignments?select=boundary_id,payload&order=boundary_id"),
         serviceJson("/rest/v1/payroll_entries?select=worker_id,shift_id,adjustment_hours,note&order=worker_id,shift_id"),
         serviceJson("/rest/v1/worker_credentials?select=worker_id,name,updated_at&order=name"),
+        serviceJson("/rest/v1/shift_leaders?select=shift_id,worker_id&order=shift_id"),
       ]);
       const setting = settings[0] as { value?: unknown } | undefined;
-      return jsonResponse({ hourlyRate: Number(setting?.value || 0), cars, payrollEntries, credentials });
+      return jsonResponse({ hourlyRate: Number(setting?.value || 0), cars, payrollEntries, credentials, leaders });
     }
 
     if (action === "save-cars") {
@@ -67,6 +68,29 @@ Deno.serve(async (request) => {
         value: hourlyRate,
         updated_at: new Date().toISOString(),
       });
+      return jsonResponse({ ok: true });
+    }
+
+    if (action === "save-leaders") {
+      if (!Array.isArray(body.leaders) || body.leaders.length > 40) {
+        return jsonResponse({ error: "Érvénytelen turnusvezetői beosztás." }, 400);
+      }
+      const selected = body.leaders.filter((item: Record<string, unknown>) => item.worker_id);
+      const cleared = body.leaders.filter((item: Record<string, unknown>) => !item.worker_id);
+      const rows = selected.map((item: Record<string, unknown>) => {
+        if (!validId(item.shift_id) || !validId(item.worker_id)) throw new Error("Érvénytelen turnus- vagy dolgozóazonosító.");
+        return {
+          shift_id: item.shift_id,
+          worker_id: item.worker_id,
+          updated_at: new Date().toISOString(),
+        };
+      });
+      if (rows.length) await upsert("/rest/v1/shift_leaders?on_conflict=shift_id", rows);
+      for (const item of cleared) {
+        if (!validId(item.shift_id)) throw new Error("Érvénytelen turnusazonosító.");
+        const response = await serviceFetch(`/rest/v1/shift_leaders?shift_id=eq.${encodeURIComponent(item.shift_id)}`, { method: "DELETE" });
+        if (!response.ok) throw new Error("A turnusvezető törlése sikertelen.");
+      }
       return jsonResponse({ ok: true });
     }
 

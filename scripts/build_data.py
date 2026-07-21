@@ -283,6 +283,10 @@ def empty_cars(schedule: dict[str, Any]) -> list[dict[str, Any]]:
     ]
 
 
+def empty_leaders(schedule: dict[str, Any]) -> list[dict[str, Any]]:
+    return [{"shift_id": shift["id"], "worker_id": None} for shift in schedule["shifts"]]
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--workbook", type=Path, default=Path("data/Sirok 2026 beosztás.xlsx"))
@@ -302,6 +306,11 @@ def main() -> int:
     if not cars_path.exists():
         cars_path.write_text(
             json.dumps(empty_cars(schedule), ensure_ascii=False, indent=2), encoding="utf-8"
+        )
+    leaders_path = args.output / "leaders.json"
+    if not leaders_path.exists():
+        leaders_path.write_text(
+            json.dumps(empty_leaders(schedule), ensure_ascii=False, indent=2), encoding="utf-8"
         )
     print(
         f'Elkészült: {len(schedule["workers"])} dolgozó, '

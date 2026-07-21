@@ -5,6 +5,7 @@ import {
   formatMoney,
   normalizeCarRows,
   payrollSummary,
+  suggestCarGroups,
   sortedWorkerIds,
 } from "./core.js";
 
@@ -14,10 +15,21 @@ const nav = document.querySelector("#main-nav");
 const menuButton = document.querySelector(".menu-button");
 const config = window.SIROK_CONFIG || {};
 
-const routes = new Set(["heti", "szemelyek", "valtasok", "autok", "informaciok", "fizetes"]);
+const routes = new Set([
+  "heti",
+  "turnusletszam",
+  "szemelyek",
+  "valtasok",
+  "utazasi-javaslat",
+  "autok",
+  "turnusvezetok",
+  "informaciok",
+  "fizetes",
+]);
 let schedule;
 let workersById;
 let carRows = [];
+let leadersByShift = new Map();
 
 menuButton?.addEventListener("click", () => {
   const open = nav.classList.toggle("open");
@@ -114,6 +126,33 @@ function renderPeople() {
   });
 }
 
+function shiftWorkers(shift) {
+  const workers = byWorkerName(schedule.workers.filter((worker) => worker.assignments[shift.id]));
+  const leaderId = leadersByShift.get(shift.id);
+  if (!leaderId) return workers;
+  return workers.sort((left, right) => {
+    if (left.id === leaderId) return -1;
+    if (right.id === leaderId) return 1;
+    return 0;
+  });
+}
+
+function renderShiftRosters() {
+  view.innerHTML = `${pageHeading(
+    "Létszámellenőrzés",
+    "Kiknek kell jelen lenniük?",
+    "Turnusonkénti névsor az aktuális turnusvezetővel az első helyen.",
+  )}<div class="grid roster-grid">${schedule.shifts.map((shift) => {
+    const workers = shiftWorkers(shift);
+    const leaderId = leadersByShift.get(shift.id);
+    return `<article class="card shift-roster-card">
+      <div class="shift-roster-head"><div><p class="eyebrow">${escapeHtml(shift.day)}</p><h2>${escapeHtml(shift.start)}–${escapeHtml(shift.end)}</h2></div><span class="headcount">${workers.length} fő</span></div>
+      ${leaderId ? `<p class="leader-callout">Turnusvezető: ${escapeHtml(workersById.get(leaderId)?.name || "Nincs megadva")}</p>` : '<p class="notice">Nincs turnusvezető kijelölve.</p>'}
+      <ol class="checklist-roster">${workers.map((worker) => `<li class="${worker.id === leaderId ? "shift-leader" : ""}"><span class="check-box" aria-hidden="true"></span><span>${escapeHtml(worker.name)}${worker.id === leaderId ? " · turnusvezető" : ""}</span></li>`).join("")}</ol>
+    </article>`;
+  }).join("")}</div>`;
+}
+
 function peopleCards(workers) {
   if (!workers.length) return '<div class="notice">Nincs találat.</div>';
   return workers
@@ -155,6 +194,34 @@ function renderTransitions() {
     .join("")}</div>`;
 }
 
+function renderTravelSuggestions(capacity = 4) {
+  view.innerHTML = `${pageHeading(
+    "Automatikus párosítás",
+    "Javasolt együtt utazó csoportok",
+    "A rendszer azokat teszi egy autóba, akik a hét során a legtöbbször ugyanakkor érkeznek és távoznak.",
+    `<label class="field compact-field"><span>Férőhely/autó</span><select id="suggestion-capacity" class="select">${[3,4,5,6,7,8,9].map((value) => `<option value="${value}" ${value === Number(capacity) ? "selected" : ""}>${value} fő</option>`).join("")}</select></label>`,
+  )}
+  <div class="algorithm-note card"><h2>Hogyan készül a javaslat?</h2><p>Minden dolgozópár pontszámot kap a közös érkezési és távozási eseményeik, valamint a teljes turnusmintájuk hasonlósága alapján. A párosító először a legerősebb párokat választja ki, majd az átlagosan legjobban illeszkedő további személyekkel tölti fel az autót a megadott férőhelyig. Lakcím és jogosítványadat nincs az Excelben, ezért ez logisztikai kiindulópont; a sofőrt az adminfelületen kell kijelölni.</p></div>
+  <div class="boundary-list">${travelSuggestionCards(capacity)}</div>`;
+  document.querySelector("#suggestion-capacity").addEventListener("change", (event) => renderTravelSuggestions(Number(event.target.value)));
+}
+
+function travelSuggestionCards(capacity) {
+  return schedule.boundaries.map((boundary, index) => `<details class="card boundary" ${index === 0 ? "open" : ""}>
+    <summary><span>${escapeHtml(boundary.label)}</span><span class="badges"><span class="badge badge-in">${boundary.arrivals.length} érkező</span><span class="badge badge-out">${boundary.departures.length} távozó</span></span></summary>
+    <div class="two-columns suggestion-columns">
+      ${suggestionDirection("Érkezés", boundary.arrivals, capacity, "badge-in")}
+      ${suggestionDirection("Távozás", boundary.departures, capacity, "badge-out")}
+    </div>
+  </details>`).join("");
+}
+
+function suggestionDirection(title, ids, capacity, badgeClass) {
+  if (!ids.length) return `<section class="roster"><h3><span class="badge ${badgeClass}">${title}</span></h3><p class="empty">Nincs érintett dolgozó.</p></section>`;
+  const groups = suggestCarGroups(schedule, ids, capacity);
+  return `<section class="roster"><h3><span class="badge ${badgeClass}">${title} · ${groups.length} javasolt autó</span></h3><div class="suggestion-groups">${groups.map((group, index) => `<article class="suggestion-car"><div class="suggestion-car-head"><b>Javasolt autó ${index + 1}</b><span>${group.members.length > 1 ? `${group.score}% egyezés` : "egyedül"}</span></div><ol>${group.members.map((id) => `<li>${escapeHtml(workersById.get(id)?.name || id)}</li>`).join("")}</ol></article>`).join("")}</div></section>`;
+}
+
 function roster(title, ids, className) {
   const names = ids.length
     ? `<ol class="name-list">${ids.map((id) => `<li>${escapeHtml(workersById.get(id)?.name || id)}</li>`).join("")}</ol>`
@@ -175,8 +242,34 @@ async function loadCars() {
       console.warn(error);
     }
   }
+  const localRows = JSON.parse(localStorage.getItem("sirok-admin-cars-v1") || "null");
+  if (localRows) return normalizeCarRows(localRows, schedule.boundaries);
   const response = await fetch("./data/cars.json", { cache: "no-store" });
   return normalizeCarRows(response.ok ? await response.json() : [], schedule.boundaries);
+}
+
+async function loadLeaders() {
+  let rows = [];
+  if (config.supabaseUrl && config.supabaseAnonKey) {
+    try {
+      const response = await fetch(
+        `${config.supabaseUrl}/rest/v1/shift_leaders?select=shift_id,worker_id`,
+        { headers: { apikey: config.supabaseAnonKey } },
+      );
+      if (!response.ok) throw new Error("A turnusvezetői adatok nem érhetők el.");
+      rows = await response.json();
+    } catch (error) {
+      console.warn(error);
+    }
+  }
+  if (!rows.length) {
+    rows = JSON.parse(localStorage.getItem("sirok-admin-leaders-v1") || "null") || [];
+    if (!rows.length) {
+      const response = await fetch("./data/leaders.json", { cache: "no-store" });
+      rows = response.ok ? await response.json() : [];
+    }
+  }
+  return new Map(rows.filter((row) => row.worker_id).map((row) => [row.shift_id, row.worker_id]));
 }
 
 function renderCars() {
@@ -200,6 +293,18 @@ function renderCars() {
     "Autóbeosztások",
     "A sofőr és a vele utazók turnusváltásonként, külön az érkezéshez és a távozáshoz.",
   )}<div class="cars-public">${sections || '<div class="notice">Az autóbeosztások még nem készültek el.</div>'}</div>`;
+}
+
+function renderLeaders() {
+  view.innerHTML = `${pageHeading(
+    "Vezetői beosztás",
+    "Turnusvezetők",
+    "Minden dolgozó itt ellenőrizheti, hogy az adott turnust ki vezeti.",
+  )}<div class="grid leader-grid">${schedule.shifts.map((shift) => {
+    const leaderId = leadersByShift.get(shift.id);
+    const leader = workersById.get(leaderId);
+    return `<article class="card leader-card"><p class="eyebrow">${escapeHtml(shift.day)}</p><h2>${escapeHtml(shift.start)}–${escapeHtml(shift.end)}</h2>${leader ? `<p class="leader-name">${escapeHtml(leader.name)}</p>` : '<p class="empty">Nincs kijelölve turnusvezető.</p>'}</article>`;
+  }).join("")}</div>`;
 }
 
 function publicRideSection(title, cars, badgeClass) {
@@ -297,9 +402,12 @@ async function renderRoute() {
   const route = routeName();
   activateNavigation(route);
   if (route === "heti") renderWeekly();
+  if (route === "turnusletszam") renderShiftRosters();
   if (route === "szemelyek") renderPeople();
   if (route === "valtasok") renderTransitions();
+  if (route === "utazasi-javaslat") renderTravelSuggestions();
   if (route === "autok") renderCars();
+  if (route === "turnusvezetok") renderLeaders();
   if (route === "informaciok") await renderInformation();
   if (route === "fizetes") renderPayrollLogin();
   document.querySelector("#main-content").focus({ preventScroll: true });
@@ -311,7 +419,7 @@ async function boot() {
     if (!response.ok) throw new Error("A beosztás adatfájlja nem érhető el.");
     schedule = await response.json();
     workersById = new Map(schedule.workers.map((worker) => [worker.id, worker]));
-    carRows = await loadCars();
+    [carRows, leadersByShift] = await Promise.all([loadCars(), loadLeaders()]);
     status.hidden = true;
     await renderRoute();
   } catch (error) {

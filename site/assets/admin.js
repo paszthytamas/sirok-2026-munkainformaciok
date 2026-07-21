@@ -4,6 +4,7 @@ import {
   formatHours,
   formatMoney,
   normalizeCarRows,
+  suggestCarGroups,
   sortedWorkerIds,
 } from "./core.js";
 
@@ -15,7 +16,7 @@ const online = Boolean(config.supabaseUrl && config.supabaseAnonKey);
 let schedule;
 let workersById;
 let sessionToken = "";
-let activeTab = "cars";
+let activeTab = location.hash === "#leaders" ? "leaders" : "cars";
 let activeBoundaryId = "";
 let activeDirection = "arrivals";
 let selectedWorkerId = "";
@@ -24,11 +25,13 @@ let carsByBoundary = new Map();
 let payrollEntries = [];
 let credentialWorkers = new Set();
 let hourlyRate = 0;
+let leadersByShift = new Map();
 
 const localKeys = {
   cars: "sirok-admin-cars-v1",
   payroll: "sirok-admin-payroll-v1",
   rate: "sirok-admin-rate-v1",
+  leaders: "sirok-admin-leaders-v1",
 };
 
 function setStatus(message = "", type = "") {
@@ -107,6 +110,7 @@ async function bootstrapOnline() {
   payrollEntries = data.payrollEntries || [];
   credentialWorkers = new Set((data.credentials || []).map((item) => item.worker_id));
   hourlyRate = Number(data.hourlyRate || 0);
+  leadersByShift = new Map((data.leaders || []).filter((item) => item.worker_id).map((item) => [item.shift_id, item.worker_id]));
 }
 
 async function bootstrapLocal() {
@@ -117,6 +121,10 @@ async function bootstrapLocal() {
   carsByBoundary = new Map(rows.map((row) => [row.boundary_id, row.payload]));
   payrollEntries = JSON.parse(localStorage.getItem(localKeys.payroll) || "[]");
   hourlyRate = Number(localStorage.getItem(localKeys.rate) || 0);
+  const leadersResponse = await fetch("../data/leaders.json", { cache: "no-store" });
+  const defaultLeaders = leadersResponse.ok ? await leadersResponse.json() : [];
+  const savedLeaders = JSON.parse(localStorage.getItem(localKeys.leaders) || "null") || defaultLeaders;
+  leadersByShift = new Map(savedLeaders.filter((item) => item.worker_id).map((item) => [item.shift_id, item.worker_id]));
 }
 
 function renderAdmin() {
@@ -126,6 +134,7 @@ function renderAdmin() {
   root.innerHTML = `${modeNotice}
     <div class="admin-tabs" role="tablist">
       <button type="button" data-tab="cars" class="${activeTab === "cars" ? "active" : ""}">Autóbeosztások</button>
+      <button type="button" data-tab="leaders" class="${activeTab === "leaders" ? "active" : ""}">Turnusvezetők</button>
       <button type="button" data-tab="payroll" class="${activeTab === "payroll" ? "active" : ""}">Fizetések</button>
       ${online ? '<button type="button" id="admin-logout">Kijelentkezés</button>' : ""}
     </div>
@@ -133,6 +142,7 @@ function renderAdmin() {
   root.querySelectorAll("[data-tab]").forEach((button) =>
     button.addEventListener("click", () => {
       activeTab = button.dataset.tab;
+      location.hash = activeTab === "leaders" ? "leaders" : "";
       renderAdmin();
     }),
   );
@@ -141,6 +151,7 @@ function renderAdmin() {
     renderLogin();
   });
   if (activeTab === "cars") renderCarsAdmin();
+  if (activeTab === "leaders") renderLeadersAdmin();
   if (activeTab === "payroll") renderPayrollAdmin();
 }
 
@@ -172,6 +183,8 @@ function renderCarsAdmin() {
       <div class="field"><label for="boundary-select">Váltási időpont</label><select id="boundary-select">${schedule.boundaries.map((item) => `<option value="${escapeHtml(item.id)}" ${item.id === boundary.id ? "selected" : ""}>${escapeHtml(item.label)}</option>`).join("")}</select></div>
       <div class="direction-tabs"><button type="button" data-direction="arrivals" class="${activeDirection === "arrivals" ? "active" : ""}">Érkezés</button><button type="button" data-direction="departures" class="${activeDirection === "departures" ? "active" : ""}">Távozás</button></div>
       <p class="lead">Húzd a neveket a sofőr vagy az utasok mezőbe. Mobilon koppints a névre, majd az „Ide helyezés” gombra.</p>
+      <div class="field"><label for="auto-capacity">Automatikus csoportméret</label><select id="auto-capacity">${[3,4,5,6,7,8,9].map((value) => `<option value="${value}" ${value === 4 ? "selected" : ""}>${value} fő/autó</option>`).join("")}</select></div>
+      <button id="auto-group" class="button button-secondary" type="button">Automatikus csoportosítás</button>
       <div class="admin-actions"><button id="add-car" class="button" type="button">+ Új autó</button><button id="save-cars" class="button button-secondary" type="button">Mentés</button></div>
       ${online ? "" : '<div class="admin-actions"><button id="export-cars" class="button button-secondary" type="button">JSON export</button></div>'}
     </aside>
@@ -227,6 +240,26 @@ function bindCarsAdmin() {
       shiftId: activeDirection === "arrivals" ? boundary.currentShiftId : boundary.previousShiftId,
     });
     renderCarsAdmin();
+  });
+  document.querySelector("#auto-group").addEventListener("click", () => {
+    const boundary = currentBoundary();
+    const capacity = Number(document.querySelector("#auto-capacity").value || 4);
+    const groups = suggestCarGroups(schedule, currentDirectionIds(), capacity);
+    const shiftId = activeDirection === "arrivals" ? boundary.currentShiftId : boundary.previousShiftId;
+    const payload = carsByBoundary.get(boundary.id) || blankPayload();
+    payload[activeDirection] = {
+      cars: groups.map((group) => ({
+        id: crypto.randomUUID(),
+        driver: null,
+        passengers: group.members,
+        fuelFee: 0,
+        shiftId,
+        suggestionScore: group.score,
+      })),
+    };
+    carsByBoundary.set(boundary.id, payload);
+    renderCarsAdmin();
+    setStatus("Az automatikus csoportok elkészültek. Jelöld ki a sofőröket, majd mentsd a beosztást.");
   });
   document.querySelectorAll("[data-remove-car]").forEach((button) =>
     button.addEventListener("click", () => {
@@ -308,6 +341,35 @@ async function saveCars() {
     setStatus("Az autóbeosztás mentve.");
     setTimeout(() => setStatus(""), 2200);
     renderCarsAdmin();
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+}
+
+function renderLeadersAdmin() {
+  document.querySelector("#admin-workspace").innerHTML = `<section class="card admin-content leader-admin-page">
+    <div><p class="eyebrow">Külön adminoldal</p><h1>Turnusvezetők beállítása</h1><p class="lead">Turnusonként csak az adott időszakra beosztott dolgozók közül választhatsz vezetőt.</p></div>
+    <form id="leaders-form"><div class="leader-editor-grid">${schedule.shifts.map((shift) => {
+      const assigned = byWorkerName(schedule.workers.filter((worker) => worker.assignments[shift.id]));
+      const selected = leadersByShift.get(shift.id) || "";
+      return `<div class="leader-edit-row"><div><p class="eyebrow">${escapeHtml(shift.day)}</p><h2>${escapeHtml(shift.start)}–${escapeHtml(shift.end)}</h2><small>${assigned.length} fő dolgozik</small></div><div class="field"><label for="leader-${escapeHtml(shift.id)}">Turnusvezető</label><select id="leader-${escapeHtml(shift.id)}" data-leader-shift="${escapeHtml(shift.id)}"><option value="">Nincs kijelölve</option>${assigned.map((worker) => `<option value="${escapeHtml(worker.id)}" ${worker.id === selected ? "selected" : ""}>${escapeHtml(worker.name)}</option>`).join("")}</select></div></div>`;
+    }).join("")}</div><div class="admin-actions"><button class="button" type="submit">Turnusvezetők mentése</button></div></form>
+  </section>`;
+  document.querySelector("#leaders-form").addEventListener("submit", saveLeaders);
+}
+
+async function saveLeaders(event) {
+  event.preventDefault();
+  const leaders = [...document.querySelectorAll("[data-leader-shift]")].map((select) => ({
+    shift_id: select.dataset.leaderShift,
+    worker_id: select.value || null,
+  }));
+  try {
+    if (online) await api("save-leaders", { leaders });
+    else localStorage.setItem(localKeys.leaders, JSON.stringify(leaders));
+    leadersByShift = new Map(leaders.filter((item) => item.worker_id).map((item) => [item.shift_id, item.worker_id]));
+    setStatus("A turnusvezetői beosztás mentve.");
+    renderLeadersAdmin();
   } catch (error) {
     setStatus(error.message, "error");
   }

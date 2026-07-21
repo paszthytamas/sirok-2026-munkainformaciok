@@ -5,11 +5,26 @@ Mobilbarát GitHub Pages-webalkalmazás a biztonsági szolgálat beosztásához,
 ## Mit tartalmaz?
 
 1. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
-2. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám.
-3. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
-4. **Autóbeosztás:** nyilvános utaslisták és védett, drag-and-drop adminfelület.
-5. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő HTML-nézet.
-6. **Fizetések:** jelszavas személyes nézet, turnusonkénti órakorrekcióval, dinamikus óradíjjal és kizárólag a sofőrnek elszámolt üzemanyagdíjjal.
+2. **Turnuslétszám:** ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető az első helyen, piros félkövér kiemeléssel jelenik meg.
+3. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám.
+4. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
+5. **Utazási javaslat:** automatikusan optimalizált autócsoportok minden érkezési és távozási időpontra.
+6. **Autóbeosztás:** nyilvános utaslisták és védett, drag-and-drop adminfelület, automatikus csoportosító gombbal.
+7. **Turnusvezetők:** nyilvános vezetői beosztás és külön adminnézet a kijelölésükhöz.
+8. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő HTML-nézet.
+9. **Fizetések:** jelszavas személyes nézet, turnusonkénti órakorrekcióval, dinamikus óradíjjal és kizárólag a sofőrnek elszámolt üzemanyagdíjjal.
+
+## Automatikus utazócsoportok
+
+A párosító algoritmus minden dolgozópárnál három szempontból számít együttmozgási pontszámot:
+
+- a közös érkezési és távozási események Jaccard-hasonlósága;
+- a teljes heti turnusminta hasonlósága;
+- az ismétlődő közös mozgások száma.
+
+Az algoritmus először a legmagasabb pontszámú párokat választja ki, majd az adott csoporthoz átlagosan legjobban illeszkedő személyekkel tölti fel az autót. A csoportméretek kiegyensúlyozottak, ezért például öt ember és négyfős kapacitás esetén 3+2 fős beosztás készül, nem 4+1. A férőhely 3–9 fő között állítható.
+
+Az Excel nem tartalmaz lakcímet, indulási helyet, jogosítványt vagy rendelkezésre álló autót, ezért a javaslat az időbeli együttmozgást optimalizálja. A sofőrt és a végleges utaslistát az adminisztrátor rögzíti.
 
 ## Excel-adatforrás
 
@@ -85,6 +100,8 @@ A GitHub Pages statikus tárhely. Ha a fizetési adat vagy a jelszóellenőrzés
 
 Az anon kulcs böngészőoldali, nyilvános kulcs; a `service_role` kulcsot viszont soha ne tedd GitHub-változóba vagy a weboldal fájljaiba. A Supabase automatikusan elérhetővé teszi azt a telepített Edge Functionök számára.
 
+A turnusvezetői bővítéshez a `supabase/migrations/202607210002_shift_leaders.sql` migrációt is futtasd le. Ezután a turnusvezetők az `/admin/#leaders` adminnézetben állíthatók be.
+
 ## GitHub Pages közzététel
 
 > **Fontos:** a mellékelt forrás-Excel az aktív beosztáson kívül további név- és kapcsolati adatokat is tartalmaz. A repositoryt ezért **privátként** hozd létre. Ne töltsd fel ezt az Excelt nyilvános repositoryba.
@@ -100,4 +117,3 @@ Privát repositoryból a Pages használhatósága a GitHub-előfizetéstől füg
 ## Adatvédelmi megjegyzés
 
 A név szerinti munkaidő-beosztás személyes adat. A weboldal `noindex` jelölést és tiltó `robots.txt` fájlt használ, de ez **nem hozzáférés-védelem**. Ha a beosztást sem szeretnéd nyilvánosan hozzáférhetővé tenni, a GitHub Pages elé külön beléptető réteg (például Cloudflare Access) szükséges. A fizetési adatok ettől függetlenül nem kerülnek a statikus oldalba.
-

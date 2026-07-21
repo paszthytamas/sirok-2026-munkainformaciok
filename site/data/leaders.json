@@ -1,0 +1,16 @@
+[
+  { "shift_id": "sze-1000-2200", "worker_id": null },
+  { "shift_id": "sze-2200-0800", "worker_id": null },
+  { "shift_id": "cs-0800-1200", "worker_id": null },
+  { "shift_id": "cs-1200-1800", "worker_id": null },
+  { "shift_id": "cs-1800-0300", "worker_id": null },
+  { "shift_id": "cs-0300-0800", "worker_id": null },
+  { "shift_id": "p-0800-1200", "worker_id": null },
+  { "shift_id": "p-1200-1800", "worker_id": null },
+  { "shift_id": "p-1800-0300", "worker_id": null },
+  { "shift_id": "p-0300-0800", "worker_id": null },
+  { "shift_id": "szo-0800-1200", "worker_id": null },
+  { "shift_id": "szo-1200-1800", "worker_id": null },
+  { "shift_id": "szo-1800-0300", "worker_id": null },
+  { "shift_id": "szo-0300-1000", "worker_id": null }
+]
