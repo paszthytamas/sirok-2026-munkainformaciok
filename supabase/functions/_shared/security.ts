@@ -95,3 +95,33 @@ export async function verifyPassword(password: string, salt: string, expected: s
   return difference === 0;
 }
 
+type WorkerCredential = {
+  worker_id: string;
+  password_salt: string;
+  password_hash: string;
+  password_iterations: number;
+};
+
+export async function authenticateWorkerPassword(password: string): Promise<string | null> {
+  if (password.length < 12 || password.length > 128) return null;
+  const lookup = await passwordLookup(password);
+  const credentials = await serviceJson(
+    `/rest/v1/worker_credentials?password_lookup=eq.${encodeURIComponent(lookup)}&select=worker_id,password_salt,password_hash,password_iterations&limit=1`,
+  ) as WorkerCredential[];
+  const credential = credentials[0];
+  if (!credential) {
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    return null;
+  }
+  const valid = await verifyPassword(
+    password,
+    credential.password_salt,
+    credential.password_hash,
+    credential.password_iterations,
+  );
+  if (!valid) {
+    await new Promise((resolve) => setTimeout(resolve, 450));
+    return null;
+  }
+  return credential.worker_id;
+}

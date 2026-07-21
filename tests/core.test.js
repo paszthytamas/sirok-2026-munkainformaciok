@@ -7,6 +7,7 @@ import {
   normalizeCarRows,
   payrollSummary,
   suggestCarGroups,
+  workerRideTimeline,
 } from "../site/assets/core.js";
 
 test("carDriversPresentAtDeparture marks the next departure after a driver arrives", () => {
@@ -33,6 +34,46 @@ test("carDriversPresentAtDeparture marks the next departure after a driver arriv
   assert.deepEqual([...carDriversPresentAtDeparture(schedule, rows, "departure-one")], ["anna"]);
   assert.deepEqual([...carDriversPresentAtDeparture(schedule, rows, "departure-two")], ["anna"]);
   assert.deepEqual([...carDriversPresentAtDeparture(schedule, rows, "later")], []);
+});
+
+test("workerRideTimeline combines arrival, departure, companions and driver role", () => {
+  const schedule = {
+    boundaries: [
+      { id: "one", label: "Sze 10:00", arrivals: ["anna", "bela"], departures: [] },
+      { id: "two", label: "Sze 22:00", arrivals: [], departures: ["anna", "bela"] },
+    ],
+  };
+  const rows = [
+    {
+      boundary_id: "one",
+      payload: { arrivals: { cars: [{ driver: "anna", passengers: ["bela"] }] } },
+    },
+    {
+      boundary_id: "two",
+      payload: { departures: { cars: [{ driver: "bela", passengers: ["anna"] }] } },
+    },
+  ];
+
+  assert.deepEqual(workerRideTimeline(schedule, rows, "anna"), [
+    {
+      boundaryId: "one",
+      boundaryLabel: "Sze 10:00",
+      direction: "arrivals",
+      assigned: true,
+      role: "driver",
+      driverId: "anna",
+      companionIds: ["bela"],
+    },
+    {
+      boundaryId: "two",
+      boundaryLabel: "Sze 22:00",
+      direction: "departures",
+      assigned: true,
+      role: "passenger",
+      driverId: "bela",
+      companionIds: ["bela"],
+    },
+  ]);
 });
 
 test("normalizeCarRows keeps every boundary", () => {

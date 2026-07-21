@@ -152,6 +152,29 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .shift-line strong { font-size: .88rem; }
 .shift-line span { color: var(--muted); font-size: .78rem; white-space: nowrap; }
 .block-note { margin-top: .8rem; padding-top: .75rem; border-top: 1px dashed var(--line); color: var(--muted); font-size: .8rem; }
+.person-details-link { display: inline-block; margin-top: .8rem; font-size: .8rem; font-weight: 800; text-decoration: none; }
+
+.worker-picker { min-width: min(100%, 300px); }
+.worker-picker > span { color: var(--muted); font-size: .75rem; font-weight: 750; }
+.worker-profile-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem; }
+.worker-profile-head h2 { margin-bottom: .25rem; }
+.call-button { text-decoration: none; }
+.worker-overview-grid { display: grid; gap: 1rem; }
+.overview-panel { padding: 1rem; }
+.overview-panel h2 { margin-bottom: .8rem; font-size: 1.15rem; }
+.work-block-list, .overview-shifts, .worker-ride-timeline { display: grid; gap: .65rem; }
+.work-block, .overview-shift { display: flex; justify-content: space-between; align-items: center; gap: .8rem; padding: .75rem .8rem; border-radius: 12px; background: var(--green-050); }
+.work-block span, .overview-shift > span { color: var(--green-800); font-size: .8rem; font-weight: 800; white-space: nowrap; }
+.overview-shift small { display: block; margin-top: .2rem; color: var(--muted); }
+.worker-ride-event { padding: .85rem; border: 1px solid var(--line); border-left-width: 5px; border-radius: 13px; }
+.worker-ride-event.ride-arrival { border-left-color: var(--green-700); background: var(--green-050); }
+.worker-ride-event.ride-departure { border-left-color: var(--amber); background: #fffaf0; }
+.worker-ride-head { display: flex; flex-wrap: wrap; align-items: center; gap: .55rem; margin-bottom: .65rem; }
+.ride-role { display: block; margin-bottom: .5rem; font-size: .84rem; }
+.driver-role { color: var(--green-800); }
+.ride-companions ul { margin: .35rem 0 0; padding-left: 1.25rem; }
+.phone-link { color: #0b5fa8; font-weight: 750; text-decoration-thickness: 1px; text-underline-offset: 2px; }
+.phone-link-locked { color: inherit; text-decoration-style: dotted; opacity: .82; }
 
 .boundary-list { display: grid; gap: .85rem; }
 .algorithm-note { margin-bottom: 1rem; padding: 1rem; border-left: 5px solid var(--green-700); }
@@ -182,17 +205,31 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .empty { margin: .5rem 0; color: var(--muted); font-style: italic; }
 
 .cars-public { display: grid; gap: 1rem; }
+.car-boundary-card { overflow: hidden; }
 .leader-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 240px), 1fr)); }
 .leader-card { padding: 1rem; }
 .leader-card h2 { margin-bottom: .7rem; }
 .leader-name { margin: 0; padding: .7rem .8rem; border-left: 4px solid var(--red); border-radius: 8px; color: var(--red); background: var(--red-soft); font-size: 1.05rem; font-weight: 900; }
-.ride-section { padding: 1rem; }
+.ride-section { padding: 1rem; border-left: 6px solid transparent; }
 .ride-section + .ride-section { border-top: 1px solid var(--line); }
+.ride-section.ride-arrivals { border-left-color: var(--green-700); background: var(--green-050); }
+.ride-section.ride-departures { border-left-color: var(--amber); background: #fff8e8; }
 .ride-section h3 { margin-bottom: .75rem; }
 .car-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(min(100%,260px),1fr)); gap: .75rem; }
-.car-public { padding: .85rem; border: 1px solid var(--line); border-radius: 13px; background: #f8faf8; }
+.car-public { padding: .85rem; border: 1px solid var(--line); border-radius: 13px; background: rgba(255,255,255,.9); }
 .car-public .driver { margin: 0 0 .4rem; font-weight: 850; }
 .car-public ul { margin: .35rem 0 0; padding-left: 1.1rem; color: var(--muted); }
+.contact-unlock-note { margin-bottom: 1rem; }
+
+.contact-tools { display: flex; flex-wrap: wrap; gap: .55rem; }
+.contact-grid { grid-template-columns: repeat(auto-fill, minmax(min(100%, 270px), 1fr)); }
+.contact-card { display: grid; gap: .85rem; padding: 1rem; }
+.contact-card.requested { border-color: var(--green-700); box-shadow: 0 0 0 3px rgba(37,99,72,.14), var(--shadow); }
+.contact-card h2 { margin-bottom: .25rem; font-size: 1.1rem; }
+.contact-card p:not(.eyebrow) { margin: .35rem 0 0; color: var(--muted); font-size: .8rem; }
+.contact-phone { display: flex; align-items: center; gap: .55rem; padding: .75rem .8rem; border-radius: 11px; color: white; background: var(--green-700); text-decoration: none; }
+.contact-phone:hover { background: var(--green-800); }
+.contact-phone span { font-size: 1.15rem; }
 
 .markdown-card { padding: clamp(1rem, 3vw, 2rem); }
 .markdown-card h1 { font-size: 1.65rem; }
@@ -233,6 +270,10 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .direction-tabs { display: flex; gap: .4rem; margin-bottom: 1rem; }
 .direction-tabs button { flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: .65rem; background: white; cursor: pointer; }
 .direction-tabs button.active { color: white; background: var(--green-800); }
+.direction-tabs button[data-direction="arrivals"].active { border-color: var(--green-700); background: var(--green-700); }
+.direction-tabs button[data-direction="departures"].active { color: #5e4100; border-color: var(--amber); background: var(--amber-soft); }
+.admin-content.admin-direction-arrivals { border-top: 6px solid var(--green-700); background: linear-gradient(180deg, var(--green-050), white 150px); }
+.admin-content.admin-direction-departures { border-top: 6px solid var(--amber); background: linear-gradient(180deg, #fff8e8, white 150px); }
 .drag-board { display: grid; gap: .85rem; }
 .car-presence-note { display: flex; align-items: center; gap: .55rem; margin: .7rem 0 1rem; padding: .7rem .8rem; border: 1px solid #e2b53c; border-radius: 11px; color: #684900; background: var(--amber-soft); font-size: .82rem; }
 .car-presence-note > span:first-child { font-size: 1.15rem; }
@@ -269,6 +310,8 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 @media (min-width: 700px) {
   .stats { grid-template-columns: repeat(4,minmax(0,1fr)); }
   .two-columns { grid-template-columns: 1fr 1fr; }
+  .worker-overview-grid { grid-template-columns: repeat(2,minmax(0,1fr)); }
+  .travel-panel { grid-column: 1 / -1; }
   .name-list { columns: 2; }
   .payroll-summary { grid-template-columns: repeat(4,minmax(0,1fr)); }
   .shift-edit { grid-template-columns: minmax(180px,1fr) 150px 2fr; align-items: end; }

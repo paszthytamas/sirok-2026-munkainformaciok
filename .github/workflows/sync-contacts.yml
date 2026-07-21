@@ -1,0 +1,73 @@
+name: Kontaktlista szinkronizálása
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "data/Sirok 2026 kontaktok.xlsx"
+      - "data/Sirok 2026 beosztás.xlsx"
+      - "scripts/sync_contacts.py"
+      - ".github/workflows/sync-contacts.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: contacts-production
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    environment: supabase-production
+    steps:
+      - name: Repository letöltése
+        uses: actions/checkout@v4
+
+      - name: Kontaktfájl ellenőrzése
+        id: workbook
+        run: |
+          if [[ -f "data/Sirok 2026 kontaktok.xlsx" ]]; then
+            echo "exists=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "exists=false" >> "$GITHUB_OUTPUT"
+            echo "A data/Sirok 2026 kontaktok.xlsx fájl még nincs feltöltve." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Biztonságos beállítás ellenőrzése
+        if: steps.workbook.outputs.exists == 'true'
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: |
+          if [[ -z "$SUPABASE_URL" || -z "$SUPABASE_SERVICE_ROLE_KEY" ]]; then
+            echo "Hiányzik a SUPABASE_URL változó vagy a SUPABASE_SERVICE_ROLE_KEY secret." >> "$GITHUB_STEP_SUMMARY"
+            exit 1
+          fi
+
+      - name: Python beállítása
+        if: steps.workbook.outputs.exists == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Függőségek telepítése
+        if: steps.workbook.outputs.exists == 'true'
+        run: pip install -r requirements.txt
+
+      - name: Aktív dolgozók feldolgozása
+        if: steps.workbook.outputs.exists == 'true'
+        run: python scripts/build_data.py
+
+      - name: Kontaktlista ellenőrzése és szinkronizálása
+        if: steps.workbook.outputs.exists == 'true'
+        env:
+          SUPABASE_URL: ${{ vars.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python scripts/sync_contacts.py
+
+      - name: Eredmény
+        if: steps.workbook.outputs.exists == 'true'
+        run: echo "A védett kontaktlista sikeresen frissült." >> "$GITHUB_STEP_SUMMARY"

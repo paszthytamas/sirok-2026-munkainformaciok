@@ -6,3 +6,5 @@ verify_jwt = false
 [functions.payroll-login]
 verify_jwt = false
 
+[functions.contacts-login]
+verify_jwt = false

@@ -7,14 +7,16 @@ Részletes admin- és backendtelepítés: [`SUPABASE_SETUP.md`](SUPABASE_SETUP.m
 ## Mit tartalmaz?
 
 1. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
-2. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető az első helyen, piros félkövér kiemeléssel jelenik meg.
-3. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám.
-4. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
-5. **Utazási javaslat:** automatikusan optimalizált autócsoportok minden érkezési és távozási időpontra.
-6. **Autóbeosztás:** nyilvános utaslisták és védett, drag-and-drop adminfelület, automatikus csoportosító gombbal.
-7. **Turnusvezetők:** nyilvános vezetői beosztás és külön adminnézet a kijelölésükhöz.
-8. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő HTML-nézet.
-9. **Fizetések:** jelszavas személyes nézet, turnusonkénti órakorrekcióval, dinamikus óradíjjal és kizárólag a sofőrnek elszámolt üzemanyagdíjjal.
+2. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető külön kiemelt blokkban látható.
+3. **Dolgozói adatlap:** egyetlen kiválasztott dolgozó összes turnusa, folyamatos munkablokkja, érkezése, távozása, útitársa és sofőri szerepe egy nézetben.
+4. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám.
+5. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
+6. **Utazási javaslat:** automatikusan optimalizált autócsoportok minden érkezési és távozási időpontra.
+7. **Autóbeosztás:** vizuálisan elkülönített érkezési és távozási utaslisták, valamint védett, drag-and-drop adminfelület.
+8. **Turnusvezetők:** nyilvános vezetői beosztás és külön adminnézet a kijelölésükhöz.
+9. **Kontaktlista:** dolgozói jelszóval védett telefonszámok és mobilon közvetlen `tel:` hívási linkek.
+10. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő HTML-nézet.
+11. **Fizetések:** jelszavas személyes nézet, turnusonkénti órakorrekcióval, dinamikus óradíjjal és kizárólag a sofőrnek elszámolt üzemanyagdíjjal.
 
 ## Automatikus utazócsoportok
 
@@ -42,6 +44,16 @@ A feldolgozás szabályai:
 
 Az Excel frissítéséhez egyszerűen cseréld le a repositoryban a fájlt ugyanazon a néven, majd töltsd fel a változást.
 
+## Kontakt Excel
+
+A telefonszámokhoz a `data/Sirok 2026 kontaktok - sablon.xlsx` fájl használható. Kitöltés után a fájlt `data/Sirok 2026 kontaktok.xlsx` néven töltsd fel. A munkalapon a strukturált Excel-tábla neve `contacts`, oszlopai:
+
+- `Név` – a beosztásban szereplő név, változtatás nélkül;
+- `Telefonszám` – szövegként, lehetőleg E.164 formában, például `+36301234567`;
+- `Megjegyzés` – opcionális.
+
+A `Kontaktlista szinkronizálása` GitHub Actions workflow ellenőrzi a neveket és telefonszámokat, majd a Supabase védett `worker_contacts` táblájába tölti őket. A Pages build nem másolja a telefonszámokat a nyilvános webes fájlok közé. A repository maradjon privát.
+
 ## Helyi futtatás
 
 Python 3.12 és Node.js 20+ szükséges.
@@ -59,15 +71,16 @@ Ezután: `http://localhost:8000`
 
 Supabase nélkül a nyilvános beosztási nézetek teljesen működnek. Az adminfelület helyi előkészítő módban használható, és az autóbeosztás JSON-ként exportálható. A jelszavak és fizetési adatok éles használatához a következő biztonságos háttér szükséges.
 
-## Miért kell külön háttér a fizetésekhez?
+## Miért kell külön háttér a fizetésekhez és kontaktokhoz?
 
 A GitHub Pages statikus tárhely. Ha a fizetési adat vagy a jelszóellenőrzés JavaScriptben vagy nyilvános JSON-fájlban lenne, bármely látogató letölthetné. Ez a projekt ezért:
 
 - csak a nyilvános beosztást és autóbeosztást szolgálja ki GitHub Pagesről;
-- a jelszó-kivonatokat és fizetési adatokat Supabase-ben, RLS mögött tartja;
+- a jelszó-kivonatokat, fizetési adatokat és telefonszámokat Supabase-ben, RLS mögött tartja;
 - a személyes jelszót PBKDF2-SHA-256 algoritmussal, egyedi sóval ellenőrzi;
 - egy szerveroldali HMAC-keresőértékkel teszi lehetővé a felhasználónév nélküli belépést;
-- soha nem küldi le más dolgozók fizetési adatait a böngészőnek.
+- soha nem küldi le más dolgozók fizetési adatait a böngészőnek;
+- a teljes kontaktlistát csak egy érvényes dolgozói jelszó után, session-alapon adja át.
 
 ## Supabase beállítása
 
@@ -93,6 +106,7 @@ A GitHub Pages statikus tárhely. Ha a fizetési adat vagy a jelszóellenőrzés
    ```bash
    supabase functions deploy admin-api
    supabase functions deploy payroll-login
+   supabase functions deploy contacts-login
    ```
 
 8. A GitHub repository **Settings → Secrets and variables → Actions → Variables** részén vedd fel:

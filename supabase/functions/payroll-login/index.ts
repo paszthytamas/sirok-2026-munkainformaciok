@@ -1,17 +1,9 @@
 import {
+  authenticateWorkerPassword,
   corsHeaders,
   jsonResponse,
-  passwordLookup,
   serviceJson,
-  verifyPassword,
 } from "../_shared/security.ts";
-
-type Credential = {
-  worker_id: string;
-  password_salt: string;
-  password_hash: string;
-  password_iterations: number;
-};
 
 type CarRow = { boundary_id: string; payload?: Record<string, { cars?: Array<Record<string, unknown>> }> };
 
@@ -40,29 +32,13 @@ Deno.serve(async (request) => {
   try {
     const body = await request.json();
     const password = typeof body.password === "string" ? body.password : "";
-    if (password.length < 12 || password.length > 128) return jsonResponse({ error: "Hibás jelszó." }, 401);
-
-    const lookup = await passwordLookup(password);
-    const credentials = await serviceJson(
-      `/rest/v1/worker_credentials?password_lookup=eq.${encodeURIComponent(lookup)}&select=worker_id,password_salt,password_hash,password_iterations&limit=1`,
-    ) as Credential[];
-    const credential = credentials[0];
-    const valid = credential && await verifyPassword(
-      password,
-      credential.password_salt,
-      credential.password_hash,
-      credential.password_iterations,
-    );
-    if (!valid) {
-      await new Promise((resolve) => setTimeout(resolve, 450));
-      return jsonResponse({ error: "Hibás jelszó." }, 401);
-    }
-
-    const workerId = credential.worker_id;
-    const [settings, entries, cars] = await Promise.all([
+    const workerId = await authenticateWorkerPassword(password);
+    if (!workerId) return jsonResponse({ error: "Hibás jelszó." }, 401);
+    const [settings, entries, cars, contacts] = await Promise.all([
       serviceJson("/rest/v1/app_settings?key=eq.hourly_rate&select=value&limit=1"),
       serviceJson(`/rest/v1/payroll_entries?worker_id=eq.${encodeURIComponent(workerId)}&select=shift_id,adjustment_hours,note&order=shift_id`),
       serviceJson("/rest/v1/car_assignments?select=boundary_id,payload"),
+      serviceJson("/rest/v1/worker_contacts?select=worker_id,name,phone_e164,phone_display,note&order=name"),
     ]);
     const setting = settings[0] as { value?: unknown } | undefined;
     return jsonResponse({
@@ -70,6 +46,7 @@ Deno.serve(async (request) => {
       hourlyRate: Number(setting?.value || 0),
       entries,
       fuelEntries: fuelEntries(cars as CarRow[], workerId),
+      contacts,
     });
   } catch (error) {
     console.error(error);

@@ -64,6 +64,37 @@ export function carDriversPresentAtDeparture(schedule, rows, targetBoundaryId) {
   return new Set();
 }
 
+export function workerRideTimeline(schedule, rows, workerId) {
+  const rowsByBoundary = new Map(
+    (Array.isArray(rows) ? rows : []).map((row) => [row.boundary_id, row.payload || {}]),
+  );
+  const timeline = [];
+
+  for (const boundary of schedule.boundaries || []) {
+    const payload = rowsByBoundary.get(boundary.id) || {};
+    for (const direction of ["arrivals", "departures"]) {
+      if (!(boundary[direction] || []).includes(workerId)) continue;
+      const car = (payload[direction]?.cars || []).find((item) =>
+        item?.driver === workerId || (item?.passengers || []).includes(workerId),
+      );
+      const memberIds = car
+        ? [car.driver, ...(car.passengers || [])].filter(Boolean)
+        : [];
+      timeline.push({
+        boundaryId: boundary.id,
+        boundaryLabel: boundary.label,
+        direction,
+        assigned: Boolean(car),
+        role: car ? (car.driver === workerId ? "driver" : "passenger") : null,
+        driverId: car?.driver || null,
+        companionIds: memberIds.filter((id) => id !== workerId),
+      });
+    }
+  }
+
+  return timeline;
+}
+
 export function payrollSummary(schedule, worker, response) {
   const entries = new Map((response.entries || []).map((entry) => [entry.shift_id, entry]));
   const fuelByShift = new Map();

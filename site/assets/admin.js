@@ -192,7 +192,7 @@ function renderCarsAdmin() {
       <div class="admin-actions"><button id="add-car" class="button" type="button">+ Új autó</button><button id="save-cars" class="button button-secondary" type="button">Mentés</button></div>
       ${online ? "" : '<div class="admin-actions"><button id="export-cars" class="button button-secondary" type="button">JSON export</button></div>'}
     </aside>
-    <section class="card admin-content">
+    <section class="card admin-content admin-direction-${activeDirection}">
       <p class="eyebrow">${activeDirection === "arrivals" ? "Érkezés" : "Távozás"}</p><h1>${escapeHtml(boundary.label)}</h1>
       ${driversOnSite.size ? '<p class="car-presence-note"><span aria-hidden="true">🚗</span><span>A sárgával jelölt dolgozó korábban sofőrként érkezett, ezért ennél a távozásnál <strong>sofőrként oszd be</strong>.</span></p>' : ""}
       <div class="drag-board">

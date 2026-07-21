@@ -53,6 +53,7 @@ Nyisd meg:
 | `SUPABASE_ACCESS_TOKEN` | A Supabase account access token |
 | `SUPABASE_DB_PASSWORD` | A Supabase-projekt adatbázis-jelszava |
 | `SUPABASE_PASSWORD_PEPPER` | Az előző pontban generált hosszú véletlen titok |
+| `SUPABASE_SERVICE_ROLE_KEY` | Kizárólag a privát GitHub Actions kontaktimporthoz használt service-role kulcs |
 
 ### Variables
 
@@ -74,7 +75,7 @@ A workflow a következőket végzi el:
 1. összekapcsolja a repositoryt a Supabase-projekttel;
 2. lefuttatja a `supabase/migrations` könyvtár migrációit;
 3. beállítja a `PASSWORD_PEPPER` és `ALLOWED_ORIGIN` Edge Function titkokat;
-4. telepíti az `admin-api` és `payroll-login` Edge Functionöket.
+4. telepíti az `admin-api`, `payroll-login` és `contacts-login` Edge Functionöket.
 
 Később a `supabase/**` fájlok `main` ágra történő módosítása ugyanezt automatikusan elindítja.
 
@@ -136,13 +137,26 @@ A **Fizetések** fülön:
 
 A már elmentett jelszó **nem olvasható vissza**. Az adatbázis csak sózott jelszókivonatot tárol. Az admin azt látja, hogy van-e jelszó beállítva. Elfelejtett jelszó esetén újat kell beállítani.
 
-## 9. Gyors hibakeresés
+## 9. Védett kontaktlista feltöltése
+
+1. Töltsd le és nyisd meg a `data/Sirok 2026 kontaktok - sablon.xlsx` fájlt.
+2. A neveket ne módosítsd; töltsd ki a `Telefonszám` oszlopot szövegként, lehetőleg `+36301234567` formában.
+3. Mentsd `Sirok 2026 kontaktok.xlsx` néven.
+4. Töltsd fel a privát repository `data` könyvtárába.
+5. A feltöltés automatikusan elindítja a **Kontaktlista szinkronizálása** workflow-t. Szükség esetén az Actions oldalról kézzel is futtatható.
+
+A telefonszámok nem kerülnek a GitHub Pages statikus fájljaiba. A workflow a `SUPABASE_SERVICE_ROLE_KEY` secret segítségével a védett `worker_contacts` táblát frissíti. Ezt a kulcsot soha ne add meg GitHub Variable-ként, ne írd fájlba, és ne építsd be a weboldalba.
+
+A nyilvános oldalon a **Kontaktlista** menüpontot bármelyik érvényes dolgozói jelszó feloldja az adott böngészőfül munkamenetére. Feloldás után az Autóbeosztás és a Dolgozói adatlap nevei közvetlen telefonhivatkozássá válnak.
+
+## 10. Gyors hibakeresés
 
 - **Az adminoldal csak helyi előkészítő módot mutat:** nincs beépítve a `SUPABASE_URL` vagy `SUPABASE_ANON_KEY`; futtasd újra a Pages workflow-t.
 - **Az admin belépés sikertelen:** ellenőrizd az Auth-felhasználót és az `admin_allowlist` rekordot.
 - **Hiányzik a `shift_leaders` tábla:** futtasd a Supabase backend workflow-t, hogy a migrációk települjenek.
 - **CORS-hiba:** a `PUBLIC_SITE_ORIGIN` pontosan `https://paszthytamas.github.io` legyen, lezáró perjel és repository-útvonal nélkül.
 - **A dolgozói fizetési belépés nem működik:** ellenőrizd, hogy a `PASSWORD_PEPPER` beállt-e, és a `payroll-login` függvény települt-e.
+- **A kontaktlista üres vagy nem nyílik meg:** ellenőrizd a `worker_contacts` migrációt, a `contacts-login` függvényt és a Kontaktlista szinkronizálása workflow eredményét.
 
 Hivatalos dokumentáció:
 
@@ -150,4 +164,3 @@ Hivatalos dokumentáció:
 - https://supabase.com/docs/guides/functions/deploy
 - https://supabase.com/docs/reference/cli/introduction
 - https://supabase.com/docs/guides/functions/secrets
-
