@@ -1,0 +1,8 @@
+project_id = "sirok-2026"
+
+[functions.admin-api]
+verify_jwt = false
+
+[functions.payroll-login]
+verify_jwt = false
+

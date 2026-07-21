@@ -1,0 +1,2195 @@
+{
+  "event": "Siroki Motoros találkozó 2026 - munkainformációk",
+  "generatedAt": "2026-07-21T14:35:52.304029+00:00",
+  "source": {
+    "workbook": "Sirok 2026 beosztás.xlsx",
+    "sheet": "contacts (1)",
+    "table": "contact"
+  },
+  "shifts": [
+    {
+      "id": "sze-1000-2200",
+      "day": "Sze",
+      "start": "10:00",
+      "end": "22:00",
+      "label": "Sze\n10:00 – 22:00",
+      "durationHours": 12.0,
+      "order": 0
+    },
+    {
+      "id": "sze-2200-0800",
+      "day": "Sze",
+      "start": "22:00",
+      "end": "08:00",
+      "label": "Sze\n22:00 – 08:00",
+      "durationHours": 10.0,
+      "order": 1
+    },
+    {
+      "id": "cs-0800-1200",
+      "day": "Cs",
+      "start": "08:00",
+      "end": "12:00",
+      "label": "Cs\n08:00 – 12:00",
+      "durationHours": 4.0,
+      "order": 2
+    },
+    {
+      "id": "cs-1200-1800",
+      "day": "Cs",
+      "start": "12:00",
+      "end": "18:00",
+      "label": "Cs\n12:00 – 18:00",
+      "durationHours": 6.0,
+      "order": 3
+    },
+    {
+      "id": "cs-1800-0300",
+      "day": "Cs",
+      "start": "18:00",
+      "end": "03:00",
+      "label": "Cs\n18:00 – 03:00",
+      "durationHours": 9.0,
+      "order": 4
+    },
+    {
+      "id": "cs-0300-0800",
+      "day": "Cs",
+      "start": "03:00",
+      "end": "08:00",
+      "label": "Cs\n03:00 – 08:00",
+      "durationHours": 5.0,
+      "order": 5
+    },
+    {
+      "id": "p-0800-1200",
+      "day": "P",
+      "start": "08:00",
+      "end": "12:00",
+      "label": "P\n08:00 – 12:00",
+      "durationHours": 4.0,
+      "order": 6
+    },
+    {
+      "id": "p-1200-1800",
+      "day": "P",
+      "start": "12:00",
+      "end": "18:00",
+      "label": "P\n12:00 – 18:00",
+      "durationHours": 6.0,
+      "order": 7
+    },
+    {
+      "id": "p-1800-0300",
+      "day": "P",
+      "start": "18:00",
+      "end": "03:00",
+      "label": "P\n18:00 – 03:00",
+      "durationHours": 9.0,
+      "order": 8
+    },
+    {
+      "id": "p-0300-0800",
+      "day": "P",
+      "start": "03:00",
+      "end": "08:00",
+      "label": "P\n03:00 – 08:00",
+      "durationHours": 5.0,
+      "order": 9
+    },
+    {
+      "id": "szo-0800-1200",
+      "day": "Szo",
+      "start": "08:00",
+      "end": "12:00",
+      "label": "Szo\n08:00 – 12:00",
+      "durationHours": 4.0,
+      "order": 10
+    },
+    {
+      "id": "szo-1200-1800",
+      "day": "Szo",
+      "start": "12:00",
+      "end": "18:00",
+      "label": "Szo\n12:00 – 18:00",
+      "durationHours": 6.0,
+      "order": 11
+    },
+    {
+      "id": "szo-1800-0300",
+      "day": "Szo",
+      "start": "18:00",
+      "end": "03:00",
+      "label": "Szo\n18:00 – 03:00",
+      "durationHours": 9.0,
+      "order": 12
+    },
+    {
+      "id": "szo-0300-1000",
+      "day": "Szo",
+      "start": "03:00",
+      "end": "10:00",
+      "label": "Szo\n03:00 – 10:00",
+      "durationHours": 7.0,
+      "order": 13
+    }
+  ],
+  "workers": [
+    {
+      "id": "benes-gergo-35e40e4524",
+      "name": "Benes Gergő",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": true,
+        "p-1200-1800": true,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": true,
+        "szo-1200-1800": true,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "p-0800-1200",
+        "p-1200-1800",
+        "szo-0800-1200",
+        "szo-1200-1800"
+      ],
+      "scheduledHours": 20.0,
+      "blocks": [
+        {
+          "startShiftId": "p-0800-1200",
+          "endShiftId": "p-1200-1800",
+          "startLabel": "P 08:00",
+          "endLabel": "P 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "p-0800-1200",
+            "p-1200-1800"
+          ]
+        },
+        {
+          "startShiftId": "szo-0800-1200",
+          "endShiftId": "szo-1200-1800",
+          "startLabel": "Szo 08:00",
+          "endLabel": "Szo 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "szo-0800-1200",
+            "szo-1200-1800"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "csoma-gabi-c8ad78cb17",
+      "name": "Csoma Gabi",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": true,
+        "p-0800-1200": true,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": true,
+        "szo-0800-1200": true,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-0300-0800",
+        "p-0800-1200",
+        "p-1200-1800",
+        "p-1800-0300",
+        "p-0300-0800",
+        "szo-0800-1200",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 48.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-0300-0800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Cs 03:00",
+          "endLabel": "Szo 03:00",
+          "hours": 48.0,
+          "shiftIds": [
+            "cs-0300-0800",
+            "p-0800-1200",
+            "p-1200-1800",
+            "p-1800-0300",
+            "p-0300-0800",
+            "szo-0800-1200",
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dobos-adam-f5dd623087",
+      "name": "Dobos Ádám",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300"
+      ],
+      "scheduledHours": 9.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 18:00",
+          "endLabel": "Cs 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "cs-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "dorko-laszlo-1e94845a90",
+      "name": "Dorkó László",
+      "assignments": {
+        "sze-1000-2200": true,
+        "sze-2200-0800": false,
+        "cs-0800-1200": true,
+        "cs-1200-1800": true,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-1000-2200",
+        "cs-0800-1200",
+        "cs-1200-1800"
+      ],
+      "scheduledHours": 22.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-1000-2200",
+          "endShiftId": "sze-1000-2200",
+          "startLabel": "Sze 10:00",
+          "endLabel": "Sze 22:00",
+          "hours": 12.0,
+          "shiftIds": [
+            "sze-1000-2200"
+          ]
+        },
+        {
+          "startShiftId": "cs-0800-1200",
+          "endShiftId": "cs-1200-1800",
+          "startLabel": "Cs 08:00",
+          "endLabel": "Cs 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "cs-0800-1200",
+            "cs-1200-1800"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fabok-janos-3967b713d7",
+      "name": "Fabók János",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": true,
+        "p-0800-1200": true,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": true,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300",
+        "cs-0300-0800",
+        "p-0800-1200",
+        "szo-0800-1200"
+      ],
+      "scheduledHours": 22.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "p-0800-1200",
+          "startLabel": "Cs 18:00",
+          "endLabel": "P 12:00",
+          "hours": 18.0,
+          "shiftIds": [
+            "cs-1800-0300",
+            "cs-0300-0800",
+            "p-0800-1200"
+          ]
+        },
+        {
+          "startShiftId": "szo-0800-1200",
+          "endShiftId": "szo-0800-1200",
+          "startLabel": "Szo 08:00",
+          "endLabel": "Szo 12:00",
+          "hours": 4.0,
+          "shiftIds": [
+            "szo-0800-1200"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "farkas-dezso-7d39738fe2",
+      "name": "Farkas Dezső",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": true,
+        "cs-1800-0300": true,
+        "cs-0300-0800": true,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": true,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": true
+      },
+      "shiftIds": [
+        "cs-1200-1800",
+        "cs-1800-0300",
+        "cs-0300-0800",
+        "p-1200-1800",
+        "p-1800-0300",
+        "p-0300-0800",
+        "szo-1200-1800",
+        "szo-1800-0300",
+        "szo-0300-1000"
+      ],
+      "scheduledHours": 62.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1200-1800",
+          "endShiftId": "cs-0300-0800",
+          "startLabel": "Cs 12:00",
+          "endLabel": "Cs 08:00",
+          "hours": 20.0,
+          "shiftIds": [
+            "cs-1200-1800",
+            "cs-1800-0300",
+            "cs-0300-0800"
+          ]
+        },
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-0300-0800",
+          "startLabel": "P 12:00",
+          "endLabel": "P 08:00",
+          "hours": 20.0,
+          "shiftIds": [
+            "p-1200-1800",
+            "p-1800-0300",
+            "p-0300-0800"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-0300-1000",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 10:00",
+          "hours": 22.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300",
+            "szo-0300-1000"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "fonad-bence-kis-golyo-68e1e6f83b",
+      "name": "Fónad Bence Kis Golyó",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300",
+        "p-1800-0300"
+      ],
+      "scheduledHours": 18.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 18:00",
+          "endLabel": "Cs 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 18:00",
+          "endLabel": "P 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "p-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "gyarmati-janos-43561b13cc",
+      "name": "Gyarmati János",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": true,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": true,
+        "szo-0800-1200": true,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-2200-0800",
+        "p-1800-0300",
+        "p-0300-0800",
+        "szo-0800-1200"
+      ],
+      "scheduledHours": 28.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-2200-0800",
+          "endShiftId": "sze-2200-0800",
+          "startLabel": "Sze 22:00",
+          "endLabel": "Sze 08:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "sze-2200-0800"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "szo-0800-1200",
+          "startLabel": "P 18:00",
+          "endLabel": "Szo 12:00",
+          "hours": 18.0,
+          "shiftIds": [
+            "p-1800-0300",
+            "p-0300-0800",
+            "szo-0800-1200"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "hutas-gabor-huti-c82680cbde",
+      "name": "Hutás Gábor Huti",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "p-1200-1800",
+        "p-1800-0300",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 30.0,
+      "blocks": [
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 12:00",
+          "endLabel": "P 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "p-1200-1800",
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "jancsi-robert-275cff10d6",
+      "name": "Jancsi Róbert",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": true,
+        "cs-0800-1200": true,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-2200-0800",
+        "cs-0800-1200",
+        "p-1800-0300",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 32.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-2200-0800",
+          "endShiftId": "cs-0800-1200",
+          "startLabel": "Sze 22:00",
+          "endLabel": "Cs 12:00",
+          "hours": 14.0,
+          "shiftIds": [
+            "sze-2200-0800",
+            "cs-0800-1200"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 18:00",
+          "endLabel": "P 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1800-0300",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 18:00",
+          "endLabel": "Szo 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "kosztik-kristof-9281390a9b",
+      "name": "Kosztik Kristóf",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": true,
+        "cs-0800-1200": true,
+        "cs-1200-1800": true,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": true,
+        "p-1200-1800": true,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": true,
+        "szo-1200-1800": true,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-2200-0800",
+        "cs-0800-1200",
+        "cs-1200-1800",
+        "p-0800-1200",
+        "p-1200-1800",
+        "szo-0800-1200",
+        "szo-1200-1800"
+      ],
+      "scheduledHours": 40.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-2200-0800",
+          "endShiftId": "cs-1200-1800",
+          "startLabel": "Sze 22:00",
+          "endLabel": "Cs 18:00",
+          "hours": 20.0,
+          "shiftIds": [
+            "sze-2200-0800",
+            "cs-0800-1200",
+            "cs-1200-1800"
+          ]
+        },
+        {
+          "startShiftId": "p-0800-1200",
+          "endShiftId": "p-1200-1800",
+          "startLabel": "P 08:00",
+          "endLabel": "P 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "p-0800-1200",
+            "p-1200-1800"
+          ]
+        },
+        {
+          "startShiftId": "szo-0800-1200",
+          "endShiftId": "szo-1200-1800",
+          "startLabel": "Szo 08:00",
+          "endLabel": "Szo 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "szo-0800-1200",
+            "szo-1200-1800"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "laczlan-janos-c41036d736",
+      "name": "Laczlan János",
+      "assignments": {
+        "sze-1000-2200": true,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": true,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-1000-2200",
+        "cs-1200-1800",
+        "cs-1800-0300"
+      ],
+      "scheduledHours": 27.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-1000-2200",
+          "endShiftId": "sze-1000-2200",
+          "startLabel": "Sze 10:00",
+          "endLabel": "Sze 22:00",
+          "hours": 12.0,
+          "shiftIds": [
+            "sze-1000-2200"
+          ]
+        },
+        {
+          "startShiftId": "cs-1200-1800",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 12:00",
+          "endLabel": "Cs 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "cs-1200-1800",
+            "cs-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "lako-tamas-ce2fa24d9a",
+      "name": "Lakó Tamás",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": true,
+        "cs-0800-1200": true,
+        "cs-1200-1800": true,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": true,
+        "p-1200-1800": true,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": true,
+        "szo-1200-1800": true,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-2200-0800",
+        "cs-0800-1200",
+        "cs-1200-1800",
+        "p-0800-1200",
+        "p-1200-1800",
+        "szo-0800-1200",
+        "szo-1200-1800"
+      ],
+      "scheduledHours": 40.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-2200-0800",
+          "endShiftId": "cs-1200-1800",
+          "startLabel": "Sze 22:00",
+          "endLabel": "Cs 18:00",
+          "hours": 20.0,
+          "shiftIds": [
+            "sze-2200-0800",
+            "cs-0800-1200",
+            "cs-1200-1800"
+          ]
+        },
+        {
+          "startShiftId": "p-0800-1200",
+          "endShiftId": "p-1200-1800",
+          "startLabel": "P 08:00",
+          "endLabel": "P 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "p-0800-1200",
+            "p-1200-1800"
+          ]
+        },
+        {
+          "startShiftId": "szo-0800-1200",
+          "endShiftId": "szo-1200-1800",
+          "startLabel": "Szo 08:00",
+          "endLabel": "Szo 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "szo-0800-1200",
+            "szo-1200-1800"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "majoros-leon-e87bb69216",
+      "name": "Majoros Leon",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": true,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "p-1200-1800",
+        "szo-0800-1200"
+      ],
+      "scheduledHours": 10.0,
+      "blocks": [
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-1200-1800",
+          "startLabel": "P 12:00",
+          "endLabel": "P 18:00",
+          "hours": 6.0,
+          "shiftIds": [
+            "p-1200-1800"
+          ]
+        },
+        {
+          "startShiftId": "szo-0800-1200",
+          "endShiftId": "szo-0800-1200",
+          "startLabel": "Szo 08:00",
+          "endLabel": "Szo 12:00",
+          "hours": 4.0,
+          "shiftIds": [
+            "szo-0800-1200"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "musa-mario-ff7643f543",
+      "name": "Musa Márió",
+      "assignments": {
+        "sze-1000-2200": true,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": true,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-1000-2200",
+        "cs-1200-1800",
+        "cs-1800-0300",
+        "p-1200-1800",
+        "p-1800-0300",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 57.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-1000-2200",
+          "endShiftId": "sze-1000-2200",
+          "startLabel": "Sze 10:00",
+          "endLabel": "Sze 22:00",
+          "hours": 12.0,
+          "shiftIds": [
+            "sze-1000-2200"
+          ]
+        },
+        {
+          "startShiftId": "cs-1200-1800",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 12:00",
+          "endLabel": "Cs 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "cs-1200-1800",
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 12:00",
+          "endLabel": "P 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "p-1200-1800",
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "papp-balazs-5065758ecb",
+      "name": "Papp Balázs",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": true,
+        "cs-1800-0300": true,
+        "cs-0300-0800": true,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": true,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": true
+      },
+      "shiftIds": [
+        "cs-1200-1800",
+        "cs-1800-0300",
+        "cs-0300-0800",
+        "p-1200-1800",
+        "p-1800-0300",
+        "p-0300-0800",
+        "szo-1200-1800",
+        "szo-1800-0300",
+        "szo-0300-1000"
+      ],
+      "scheduledHours": 62.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1200-1800",
+          "endShiftId": "cs-0300-0800",
+          "startLabel": "Cs 12:00",
+          "endLabel": "Cs 08:00",
+          "hours": 20.0,
+          "shiftIds": [
+            "cs-1200-1800",
+            "cs-1800-0300",
+            "cs-0300-0800"
+          ]
+        },
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-0300-0800",
+          "startLabel": "P 12:00",
+          "endLabel": "P 08:00",
+          "hours": 20.0,
+          "shiftIds": [
+            "p-1200-1800",
+            "p-1800-0300",
+            "p-0300-0800"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-0300-1000",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 10:00",
+          "hours": 22.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300",
+            "szo-0300-1000"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "paszthy-tamas-8bc251da89",
+      "name": "Pászthy Tamás",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": true,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": true,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1200-1800",
+        "p-1800-0300",
+        "szo-0800-1200",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 34.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1200-1800",
+          "endShiftId": "cs-1200-1800",
+          "startLabel": "Cs 12:00",
+          "endLabel": "Cs 18:00",
+          "hours": 6.0,
+          "shiftIds": [
+            "cs-1200-1800"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 18:00",
+          "endLabel": "P 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-0800-1200",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 08:00",
+          "endLabel": "Szo 03:00",
+          "hours": 19.0,
+          "shiftIds": [
+            "szo-0800-1200",
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "rohaly-viktor-086ebe2c30",
+      "name": "Rohály Viktor",
+      "assignments": {
+        "sze-1000-2200": true,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": true,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-1000-2200",
+        "cs-1200-1800",
+        "cs-1800-0300",
+        "p-1200-1800",
+        "p-1800-0300",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 57.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-1000-2200",
+          "endShiftId": "sze-1000-2200",
+          "startLabel": "Sze 10:00",
+          "endLabel": "Sze 22:00",
+          "hours": 12.0,
+          "shiftIds": [
+            "sze-1000-2200"
+          ]
+        },
+        {
+          "startShiftId": "cs-1200-1800",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 12:00",
+          "endLabel": "Cs 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "cs-1200-1800",
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 12:00",
+          "endLabel": "P 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "p-1200-1800",
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "seres-laszlo-875ef8bb8e",
+      "name": "Seres László",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": true,
+        "cs-1200-1800": true,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-0800-1200",
+        "cs-1200-1800",
+        "cs-1800-0300",
+        "p-1200-1800",
+        "p-1800-0300",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 49.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-0800-1200",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 08:00",
+          "endLabel": "Cs 03:00",
+          "hours": 19.0,
+          "shiftIds": [
+            "cs-0800-1200",
+            "cs-1200-1800",
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 12:00",
+          "endLabel": "P 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "p-1200-1800",
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "suszter-daniel-3128a9be94",
+      "name": "Suszter Dániel",
+      "assignments": {
+        "sze-1000-2200": true,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": true,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-1000-2200",
+        "p-1200-1800",
+        "p-1800-0300",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 42.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-1000-2200",
+          "endShiftId": "sze-1000-2200",
+          "startLabel": "Sze 10:00",
+          "endLabel": "Sze 22:00",
+          "hours": 12.0,
+          "shiftIds": [
+            "sze-1000-2200"
+          ]
+        },
+        {
+          "startShiftId": "p-1200-1800",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 12:00",
+          "endLabel": "P 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "p-1200-1800",
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "szabo-martin-herkules-71f95eed70",
+      "name": "Szabó Martin Herkules",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": true,
+        "cs-1200-1800": true,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-0800-1200",
+        "cs-1200-1800"
+      ],
+      "scheduledHours": 10.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-0800-1200",
+          "endShiftId": "cs-1200-1800",
+          "startLabel": "Cs 08:00",
+          "endLabel": "Cs 18:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "cs-0800-1200",
+            "cs-1200-1800"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "szabo-peti-0e72cb2cd4",
+      "name": "Szabó Peti",
+      "assignments": {
+        "sze-1000-2200": true,
+        "sze-2200-0800": true,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": true,
+        "p-0800-1200": true,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": true,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-1000-2200",
+        "sze-2200-0800",
+        "cs-1800-0300",
+        "cs-0300-0800",
+        "p-0800-1200",
+        "p-1800-0300",
+        "p-0300-0800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 63.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-1000-2200",
+          "endShiftId": "sze-2200-0800",
+          "startLabel": "Sze 10:00",
+          "endLabel": "Sze 08:00",
+          "hours": 22.0,
+          "shiftIds": [
+            "sze-1000-2200",
+            "sze-2200-0800"
+          ]
+        },
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "p-0800-1200",
+          "startLabel": "Cs 18:00",
+          "endLabel": "P 12:00",
+          "hours": 18.0,
+          "shiftIds": [
+            "cs-1800-0300",
+            "cs-0300-0800",
+            "p-0800-1200"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-0300-0800",
+          "startLabel": "P 18:00",
+          "endLabel": "P 08:00",
+          "hours": 14.0,
+          "shiftIds": [
+            "p-1800-0300",
+            "p-0300-0800"
+          ]
+        },
+        {
+          "startShiftId": "szo-1800-0300",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 18:00",
+          "endLabel": "Szo 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "szendrei-jazon-92c281a098",
+      "name": "Szendrei Jázon",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 9.0,
+      "blocks": [
+        {
+          "startShiftId": "szo-1800-0300",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 18:00",
+          "endLabel": "Szo 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "szenjan-tamas-0fb48f7795",
+      "name": "Szenján Tamás",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 18.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 18:00",
+          "endLabel": "Cs 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1800-0300",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 18:00",
+          "endLabel": "Szo 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tatar-attila-f5910ae09a",
+      "name": "Tatár Attila",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": true,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1200-1800",
+        "cs-1800-0300",
+        "p-1800-0300",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 33.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1200-1800",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 12:00",
+          "endLabel": "Cs 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "cs-1200-1800",
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 18:00",
+          "endLabel": "P 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1800-0300",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 18:00",
+          "endLabel": "Szo 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "tatar-roland-46abfbfe71",
+      "name": "Tatár Roland",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": true,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": true,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300",
+        "cs-0300-0800",
+        "p-1800-0300",
+        "p-0300-0800",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 43.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "cs-0300-0800",
+          "startLabel": "Cs 18:00",
+          "endLabel": "Cs 08:00",
+          "hours": 14.0,
+          "shiftIds": [
+            "cs-1800-0300",
+            "cs-0300-0800"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-0300-0800",
+          "startLabel": "P 18:00",
+          "endLabel": "P 08:00",
+          "hours": 14.0,
+          "shiftIds": [
+            "p-1800-0300",
+            "p-0300-0800"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toth-andras-2f06e2da76",
+      "name": "Tóth András",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300",
+        "p-1800-0300",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 27.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 18:00",
+          "endLabel": "Cs 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 18:00",
+          "endLabel": "P 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1800-0300",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 18:00",
+          "endLabel": "Szo 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toth-istvan-b4bdba6f38",
+      "name": "Tóth István",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300",
+        "p-1800-0300",
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 33.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 18:00",
+          "endLabel": "Cs 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "cs-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 18:00",
+          "endLabel": "P 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "p-1800-0300"
+          ]
+        },
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "veres-valentin-f835a89416",
+      "name": "Veres Valentin",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": true,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "p-1800-0300"
+      ],
+      "scheduledHours": 9.0,
+      "blocks": [
+        {
+          "startShiftId": "p-1800-0300",
+          "endShiftId": "p-1800-0300",
+          "startLabel": "P 18:00",
+          "endLabel": "P 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "p-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vilmanyi-zsolt-2f9bab78e0",
+      "name": "Vilmányi Zsolt",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": true,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "cs-1800-0300"
+      ],
+      "scheduledHours": 9.0,
+      "blocks": [
+        {
+          "startShiftId": "cs-1800-0300",
+          "endShiftId": "cs-1800-0300",
+          "startLabel": "Cs 18:00",
+          "endLabel": "Cs 03:00",
+          "hours": 9.0,
+          "shiftIds": [
+            "cs-1800-0300"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "vitai-david-5451a5ed4b",
+      "name": "Vitai Dávid",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": true,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": false,
+        "szo-1800-0300": false,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "sze-2200-0800"
+      ],
+      "scheduledHours": 10.0,
+      "blocks": [
+        {
+          "startShiftId": "sze-2200-0800",
+          "endShiftId": "sze-2200-0800",
+          "startLabel": "Sze 22:00",
+          "endLabel": "Sze 08:00",
+          "hours": 10.0,
+          "shiftIds": [
+            "sze-2200-0800"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "voros-balazs-cb0c683895",
+      "name": "Vörös Balázs",
+      "assignments": {
+        "sze-1000-2200": false,
+        "sze-2200-0800": false,
+        "cs-0800-1200": false,
+        "cs-1200-1800": false,
+        "cs-1800-0300": false,
+        "cs-0300-0800": false,
+        "p-0800-1200": false,
+        "p-1200-1800": false,
+        "p-1800-0300": false,
+        "p-0300-0800": false,
+        "szo-0800-1200": false,
+        "szo-1200-1800": true,
+        "szo-1800-0300": true,
+        "szo-0300-1000": false
+      },
+      "shiftIds": [
+        "szo-1200-1800",
+        "szo-1800-0300"
+      ],
+      "scheduledHours": 15.0,
+      "blocks": [
+        {
+          "startShiftId": "szo-1200-1800",
+          "endShiftId": "szo-1800-0300",
+          "startLabel": "Szo 12:00",
+          "endLabel": "Szo 03:00",
+          "hours": 15.0,
+          "shiftIds": [
+            "szo-1200-1800",
+            "szo-1800-0300"
+          ]
+        }
+      ]
+    }
+  ],
+  "boundaries": [
+    {
+      "id": "sze-1000-2200-start",
+      "label": "Sze 10:00",
+      "currentShiftId": "sze-1000-2200",
+      "previousShiftId": null,
+      "arrivals": [
+        "dorko-laszlo-1e94845a90",
+        "laczlan-janos-c41036d736",
+        "musa-mario-ff7643f543",
+        "rohaly-viktor-086ebe2c30",
+        "suszter-daniel-3128a9be94",
+        "szabo-peti-0e72cb2cd4"
+      ],
+      "departures": [],
+      "order": 0
+    },
+    {
+      "id": "sze-2200-0800-start",
+      "label": "Sze 22:00",
+      "currentShiftId": "sze-2200-0800",
+      "previousShiftId": "sze-1000-2200",
+      "arrivals": [
+        "gyarmati-janos-43561b13cc",
+        "jancsi-robert-275cff10d6",
+        "kosztik-kristof-9281390a9b",
+        "lako-tamas-ce2fa24d9a",
+        "vitai-david-5451a5ed4b"
+      ],
+      "departures": [
+        "dorko-laszlo-1e94845a90",
+        "laczlan-janos-c41036d736",
+        "musa-mario-ff7643f543",
+        "rohaly-viktor-086ebe2c30",
+        "suszter-daniel-3128a9be94"
+      ],
+      "order": 1
+    },
+    {
+      "id": "cs-0800-1200-start",
+      "label": "Cs 08:00",
+      "currentShiftId": "cs-0800-1200",
+      "previousShiftId": "sze-2200-0800",
+      "arrivals": [
+        "dorko-laszlo-1e94845a90",
+        "seres-laszlo-875ef8bb8e",
+        "szabo-martin-herkules-71f95eed70"
+      ],
+      "departures": [
+        "gyarmati-janos-43561b13cc",
+        "szabo-peti-0e72cb2cd4",
+        "vitai-david-5451a5ed4b"
+      ],
+      "order": 2
+    },
+    {
+      "id": "cs-1200-1800-start",
+      "label": "Cs 12:00",
+      "currentShiftId": "cs-1200-1800",
+      "previousShiftId": "cs-0800-1200",
+      "arrivals": [
+        "farkas-dezso-7d39738fe2",
+        "laczlan-janos-c41036d736",
+        "musa-mario-ff7643f543",
+        "papp-balazs-5065758ecb",
+        "paszthy-tamas-8bc251da89",
+        "rohaly-viktor-086ebe2c30",
+        "tatar-attila-f5910ae09a"
+      ],
+      "departures": [
+        "jancsi-robert-275cff10d6"
+      ],
+      "order": 3
+    },
+    {
+      "id": "cs-1800-0300-start",
+      "label": "Cs 18:00",
+      "currentShiftId": "cs-1800-0300",
+      "previousShiftId": "cs-1200-1800",
+      "arrivals": [
+        "dobos-adam-f5dd623087",
+        "fabok-janos-3967b713d7",
+        "fonad-bence-kis-golyo-68e1e6f83b",
+        "szabo-peti-0e72cb2cd4",
+        "szenjan-tamas-0fb48f7795",
+        "tatar-roland-46abfbfe71",
+        "toth-andras-2f06e2da76",
+        "toth-istvan-b4bdba6f38",
+        "vilmanyi-zsolt-2f9bab78e0"
+      ],
+      "departures": [
+        "dorko-laszlo-1e94845a90",
+        "kosztik-kristof-9281390a9b",
+        "lako-tamas-ce2fa24d9a",
+        "paszthy-tamas-8bc251da89",
+        "szabo-martin-herkules-71f95eed70"
+      ],
+      "order": 4
+    },
+    {
+      "id": "cs-0300-0800-start",
+      "label": "Cs 03:00",
+      "currentShiftId": "cs-0300-0800",
+      "previousShiftId": "cs-1800-0300",
+      "arrivals": [
+        "csoma-gabi-c8ad78cb17"
+      ],
+      "departures": [
+        "dobos-adam-f5dd623087",
+        "fonad-bence-kis-golyo-68e1e6f83b",
+        "laczlan-janos-c41036d736",
+        "musa-mario-ff7643f543",
+        "rohaly-viktor-086ebe2c30",
+        "seres-laszlo-875ef8bb8e",
+        "szenjan-tamas-0fb48f7795",
+        "tatar-attila-f5910ae09a",
+        "toth-andras-2f06e2da76",
+        "toth-istvan-b4bdba6f38",
+        "vilmanyi-zsolt-2f9bab78e0"
+      ],
+      "order": 5
+    },
+    {
+      "id": "p-0800-1200-start",
+      "label": "P 08:00",
+      "currentShiftId": "p-0800-1200",
+      "previousShiftId": "cs-0300-0800",
+      "arrivals": [
+        "benes-gergo-35e40e4524",
+        "kosztik-kristof-9281390a9b",
+        "lako-tamas-ce2fa24d9a"
+      ],
+      "departures": [
+        "farkas-dezso-7d39738fe2",
+        "papp-balazs-5065758ecb",
+        "tatar-roland-46abfbfe71"
+      ],
+      "order": 6
+    },
+    {
+      "id": "p-1200-1800-start",
+      "label": "P 12:00",
+      "currentShiftId": "p-1200-1800",
+      "previousShiftId": "p-0800-1200",
+      "arrivals": [
+        "farkas-dezso-7d39738fe2",
+        "hutas-gabor-huti-c82680cbde",
+        "majoros-leon-e87bb69216",
+        "musa-mario-ff7643f543",
+        "papp-balazs-5065758ecb",
+        "rohaly-viktor-086ebe2c30",
+        "seres-laszlo-875ef8bb8e",
+        "suszter-daniel-3128a9be94"
+      ],
+      "departures": [
+        "fabok-janos-3967b713d7",
+        "szabo-peti-0e72cb2cd4"
+      ],
+      "order": 7
+    },
+    {
+      "id": "p-1800-0300-start",
+      "label": "P 18:00",
+      "currentShiftId": "p-1800-0300",
+      "previousShiftId": "p-1200-1800",
+      "arrivals": [
+        "fonad-bence-kis-golyo-68e1e6f83b",
+        "gyarmati-janos-43561b13cc",
+        "jancsi-robert-275cff10d6",
+        "paszthy-tamas-8bc251da89",
+        "szabo-peti-0e72cb2cd4",
+        "tatar-attila-f5910ae09a",
+        "tatar-roland-46abfbfe71",
+        "toth-andras-2f06e2da76",
+        "toth-istvan-b4bdba6f38",
+        "veres-valentin-f835a89416"
+      ],
+      "departures": [
+        "benes-gergo-35e40e4524",
+        "kosztik-kristof-9281390a9b",
+        "lako-tamas-ce2fa24d9a",
+        "majoros-leon-e87bb69216"
+      ],
+      "order": 8
+    },
+    {
+      "id": "p-0300-0800-start",
+      "label": "P 03:00",
+      "currentShiftId": "p-0300-0800",
+      "previousShiftId": "p-1800-0300",
+      "arrivals": [],
+      "departures": [
+        "fonad-bence-kis-golyo-68e1e6f83b",
+        "hutas-gabor-huti-c82680cbde",
+        "jancsi-robert-275cff10d6",
+        "musa-mario-ff7643f543",
+        "paszthy-tamas-8bc251da89",
+        "rohaly-viktor-086ebe2c30",
+        "seres-laszlo-875ef8bb8e",
+        "suszter-daniel-3128a9be94",
+        "tatar-attila-f5910ae09a",
+        "toth-andras-2f06e2da76",
+        "toth-istvan-b4bdba6f38",
+        "veres-valentin-f835a89416"
+      ],
+      "order": 9
+    },
+    {
+      "id": "szo-0800-1200-start",
+      "label": "Szo 08:00",
+      "currentShiftId": "szo-0800-1200",
+      "previousShiftId": "p-0300-0800",
+      "arrivals": [
+        "benes-gergo-35e40e4524",
+        "fabok-janos-3967b713d7",
+        "kosztik-kristof-9281390a9b",
+        "lako-tamas-ce2fa24d9a",
+        "majoros-leon-e87bb69216",
+        "paszthy-tamas-8bc251da89"
+      ],
+      "departures": [
+        "farkas-dezso-7d39738fe2",
+        "papp-balazs-5065758ecb",
+        "szabo-peti-0e72cb2cd4",
+        "tatar-roland-46abfbfe71"
+      ],
+      "order": 10
+    },
+    {
+      "id": "szo-1200-1800-start",
+      "label": "Szo 12:00",
+      "currentShiftId": "szo-1200-1800",
+      "previousShiftId": "szo-0800-1200",
+      "arrivals": [
+        "farkas-dezso-7d39738fe2",
+        "hutas-gabor-huti-c82680cbde",
+        "musa-mario-ff7643f543",
+        "papp-balazs-5065758ecb",
+        "rohaly-viktor-086ebe2c30",
+        "seres-laszlo-875ef8bb8e",
+        "suszter-daniel-3128a9be94",
+        "tatar-roland-46abfbfe71",
+        "toth-istvan-b4bdba6f38",
+        "voros-balazs-cb0c683895"
+      ],
+      "departures": [
+        "fabok-janos-3967b713d7",
+        "gyarmati-janos-43561b13cc",
+        "majoros-leon-e87bb69216"
+      ],
+      "order": 11
+    },
+    {
+      "id": "szo-1800-0300-start",
+      "label": "Szo 18:00",
+      "currentShiftId": "szo-1800-0300",
+      "previousShiftId": "szo-1200-1800",
+      "arrivals": [
+        "jancsi-robert-275cff10d6",
+        "szabo-peti-0e72cb2cd4",
+        "szendrei-jazon-92c281a098",
+        "szenjan-tamas-0fb48f7795",
+        "tatar-attila-f5910ae09a",
+        "toth-andras-2f06e2da76"
+      ],
+      "departures": [
+        "benes-gergo-35e40e4524",
+        "kosztik-kristof-9281390a9b",
+        "lako-tamas-ce2fa24d9a"
+      ],
+      "order": 12
+    },
+    {
+      "id": "szo-0300-1000-start",
+      "label": "Szo 03:00",
+      "currentShiftId": "szo-0300-1000",
+      "previousShiftId": "szo-1800-0300",
+      "arrivals": [],
+      "departures": [
+        "csoma-gabi-c8ad78cb17",
+        "hutas-gabor-huti-c82680cbde",
+        "jancsi-robert-275cff10d6",
+        "musa-mario-ff7643f543",
+        "paszthy-tamas-8bc251da89",
+        "rohaly-viktor-086ebe2c30",
+        "seres-laszlo-875ef8bb8e",
+        "suszter-daniel-3128a9be94",
+        "szabo-peti-0e72cb2cd4",
+        "szendrei-jazon-92c281a098",
+        "szenjan-tamas-0fb48f7795",
+        "tatar-attila-f5910ae09a",
+        "tatar-roland-46abfbfe71",
+        "toth-andras-2f06e2da76",
+        "toth-istvan-b4bdba6f38",
+        "voros-balazs-cb0c683895"
+      ],
+      "order": 13
+    },
+    {
+      "id": "event-end",
+      "label": "Szo 10:00 – rendezvény vége",
+      "currentShiftId": null,
+      "previousShiftId": "szo-0300-1000",
+      "arrivals": [],
+      "departures": [
+        "farkas-dezso-7d39738fe2",
+        "papp-balazs-5065758ecb"
+      ],
+      "order": 14
+    }
+  ],
+  "statistics": {
+    "workerCount": 32,
+    "shiftCount": 14,
+    "scheduledHours": 988.0
+  }
+}

@@ -1,0 +1,167 @@
+[
+  {
+    "boundary_id": "sze-1000-2200-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "sze-2200-0800-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "cs-0800-1200-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "cs-1200-1800-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "cs-1800-0300-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "cs-0300-0800-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "p-0800-1200-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "p-1200-1800-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "p-1800-0300-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "p-0300-0800-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "szo-0800-1200-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "szo-1200-1800-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "szo-1800-0300-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "szo-0300-1000-start",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  },
+  {
+    "boundary_id": "event-end",
+    "payload": {
+      "arrivals": {
+        "cars": []
+      },
+      "departures": {
+        "cars": []
+      }
+    }
+  }
+]
