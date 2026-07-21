@@ -1,0 +1,81 @@
+name: Supabase backend telepítése
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "supabase/**"
+      - ".github/workflows/deploy-supabase.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: supabase-production
+    steps:
+      - name: Repository letöltése
+        uses: actions/checkout@v4
+
+      - name: Beállítás ellenőrzése
+        id: config
+        env:
+          ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          PASSWORD_PEPPER: ${{ secrets.SUPABASE_PASSWORD_PEPPER }}
+          PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+        run: |
+          if [[ -n "$ACCESS_TOKEN" && -n "$DB_PASSWORD" && -n "$PASSWORD_PEPPER" && -n "$PROJECT_REF" ]]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "A Supabase GitHub secrets/variables még nincsenek teljesen beállítva." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Supabase CLI telepítése
+        if: steps.config.outputs.configured == 'true'
+        uses: supabase/setup-cli@v3
+
+      - name: Projekt összekapcsolása
+        if: steps.config.outputs.configured == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+        run: supabase link --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Adatbázis-migrációk telepítése
+        if: steps.config.outputs.configured == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+        run: supabase db push --linked --include-all
+
+      - name: Edge Function titkok beállítása
+        if: steps.config.outputs.configured == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+          PASSWORD_PEPPER: ${{ secrets.SUPABASE_PASSWORD_PEPPER }}
+          PUBLIC_SITE_ORIGIN: ${{ vars.PUBLIC_SITE_ORIGIN }}
+        run: |
+          SITE_ORIGIN="${PUBLIC_SITE_ORIGIN:-https://paszthytamas.github.io}"
+          supabase secrets set "PASSWORD_PEPPER=$PASSWORD_PEPPER" "ALLOWED_ORIGIN=$SITE_ORIGIN" --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Edge Functionök telepítése
+        if: steps.config.outputs.configured == 'true'
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_PROJECT_REF: ${{ vars.SUPABASE_PROJECT_REF }}
+        run: supabase functions deploy --project-ref "$SUPABASE_PROJECT_REF"
+
+      - name: Eredmény
+        if: steps.config.outputs.configured == 'true'
+        run: echo "A migrációk és az Edge Functionök sikeresen települtek." >> "$GITHUB_STEP_SUMMARY"
+

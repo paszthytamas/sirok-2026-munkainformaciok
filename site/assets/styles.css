@@ -130,15 +130,23 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .shift-roster-card { overflow: hidden; }
 .shift-roster-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1rem .75rem; }
 .shift-roster-head h2 { margin-bottom: 0; }
-.headcount { display: inline-grid; place-items: center; min-width: 66px; min-height: 40px; padding: .4rem .65rem; border-radius: 999px; color: white; background: var(--green-800); font-weight: 850; }
+.headcount { display: inline-grid; place-items: center; min-width: 118px; min-height: 40px; padding: .4rem .65rem; border-radius: 999px; color: white; background: var(--green-800); font-size: .78rem; font-weight: 850; white-space: nowrap; }
 .leader-callout { margin: 0 1rem .75rem; padding: .65rem .8rem; border-left: 4px solid var(--red); border-radius: 8px; color: var(--red); background: var(--red-soft); font-weight: 850; }
 .shift-roster-card > .notice { margin: 0 1rem .75rem; }
+.attendance-actions { display: flex; flex-wrap: wrap; gap: .45rem; padding: 0 1rem .75rem; }
+.attendance-actions button { border: 1px solid var(--line); border-radius: 9px; padding: .48rem .65rem; color: var(--green-800); background: white; cursor: pointer; font-size: .76rem; font-weight: 750; }
+.attendance-actions button:hover { border-color: var(--green-700); background: var(--green-050); }
 .checklist-roster { margin: 0; padding: 0; list-style: none; border-top: 1px solid var(--line); counter-reset: roster; }
-.checklist-roster li { display: flex; align-items: center; gap: .65rem; min-height: 46px; padding: .6rem 1rem; border-bottom: 1px solid var(--line); counter-increment: roster; }
+.checklist-roster li { min-height: 46px; border-bottom: 1px solid var(--line); counter-increment: roster; }
+.checklist-roster label { display: flex; align-items: center; gap: .7rem; min-height: 46px; padding: .6rem 1rem; cursor: pointer; }
+.attendance-checkbox { flex: 0 0 22px; width: 22px; height: 22px; margin: 0; accent-color: var(--green-700); cursor: pointer; }
 .checklist-roster li:last-child { border-bottom: 0; }
 .check-box { flex: 0 0 20px; width: 20px; height: 20px; border: 2px solid #9aaba1; border-radius: 5px; background: white; }
+.checklist-roster li.present:not(.shift-leader) { color: #145c36; background: var(--green-100); font-weight: 750; }
 .checklist-roster .shift-leader { color: var(--red); background: var(--red-soft); font-weight: 900; }
 .checklist-roster .shift-leader .check-box { border-color: var(--red); }
+.checklist-roster .shift-leader .attendance-checkbox { accent-color: var(--red); }
+.session-note { margin: 1rem 0 0; color: var(--muted); font-size: .8rem; text-align: center; }
 .person-card { padding: 1rem; }
 .person-card h2 { margin-bottom: .35rem; font-size: 1.1rem; }
 .meta-row { display: flex; flex-wrap: wrap; gap: .5rem; color: var(--muted); font-size: .82rem; }
@@ -243,6 +251,7 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .fuel-field { margin-top: .7rem; }
 .tap-target { width: 100%; margin-top: .45rem; border: 0; border-radius: 9px; padding: .5rem; color: var(--green-800); background: var(--green-100); cursor: pointer; font-size: .77rem; font-weight: 750; }
 .payroll-editor { display: grid; gap: 1rem; }
+.password-help { margin: .55rem 0; color: var(--muted); font-size: .76rem; }
 .leader-admin-page { display: grid; gap: 1rem; }
 .leader-editor-grid { display: grid; gap: .75rem; }
 .leader-edit-row { display: grid; gap: .8rem; padding: 1rem; border: 1px solid var(--line); border-radius: 14px; background: #f8faf8; }

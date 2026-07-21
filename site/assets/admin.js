@@ -390,6 +390,8 @@ function renderPayrollAdmin() {
       <hr />
       <form id="password-form">
         <div class="field"><label for="worker-password-new">Személyes jelszó beállítása</label><input id="worker-password-new" type="password" minlength="12" autocomplete="new-password" ${online ? "required" : "disabled"} /></div>
+        <p class="password-help">A mentett jelszó később biztonsági okból nem olvasható vissza. Elfelejtett jelszó esetén itt lehet újat beállítani.</p>
+        <div class="admin-actions"><button id="generate-worker-password" class="button button-secondary" type="button" ${online ? "" : "disabled"}>Erős jelszó generálása</button><button id="copy-worker-password" class="button button-secondary" type="button" ${online ? "" : "disabled"}>Másolás</button></div>
         <button class="button" type="submit" ${online ? "" : "disabled"}>Jelszó beállítása</button>
       </form>
       <p class="lead">${credentialWorkers.has(worker.id) ? "✓ Van beállított jelszó" : "Nincs beállított jelszó"}</p>
@@ -414,6 +416,29 @@ function bindPayrollAdmin(worker) {
     renderPayrollAdmin();
   });
   document.querySelector("#save-rate").addEventListener("click", saveRate);
+  document.querySelector("#generate-worker-password").addEventListener("click", () => {
+    const alphabet = "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%";
+    const bytes = crypto.getRandomValues(new Uint8Array(18));
+    const password = [...bytes].map((byte) => alphabet[byte % alphabet.length]).join("");
+    const input = document.querySelector("#worker-password-new");
+    input.value = password;
+    input.type = "text";
+    input.focus();
+    input.select();
+    setStatus("Erős jelszó elkészült. Másold ki és add át a dolgozónak a mentés előtt.");
+  });
+  document.querySelector("#copy-worker-password").addEventListener("click", async () => {
+    const input = document.querySelector("#worker-password-new");
+    if (!input.value) return setStatus("Előbb írj be vagy generálj egy jelszót.", "error");
+    try {
+      await navigator.clipboard.writeText(input.value);
+      setStatus("A jelszó a vágólapra másolva.");
+    } catch {
+      input.type = "text";
+      input.select();
+      setStatus("A jelszó kijelölve; másold ki a böngésző másolás parancsával.");
+    }
+  });
   document.querySelector("#password-form").addEventListener("submit", async (event) => {
     event.preventDefault();
     try {
@@ -423,7 +448,7 @@ function bindPayrollAdmin(worker) {
         password: document.querySelector("#worker-password-new").value,
       });
       credentialWorkers.add(worker.id);
-      setStatus("A személyes jelszó beállítva.");
+      setStatus("A személyes jelszó beállítva. Később nem olvasható vissza, csak lecserélhető.");
       renderPayrollAdmin();
     } catch (error) {
       setStatus(error.message, "error");

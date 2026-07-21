@@ -2,10 +2,12 @@
 
 Mobilbarát GitHub Pages-webalkalmazás a biztonsági szolgálat beosztásához, turnusváltásaihoz, autóbeosztásaihoz, általános információihoz és személyes fizetési összesítőihez.
 
+Részletes admin- és backendtelepítés: [`SUPABASE_SETUP.md`](SUPABASE_SETUP.md).
+
 ## Mit tartalmaz?
 
 1. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
-2. **Turnuslétszám:** ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető az első helyen, piros félkövér kiemeléssel jelenik meg.
+2. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető az első helyen, piros félkövér kiemeléssel jelenik meg.
 3. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám.
 4. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
 5. **Utazási javaslat:** automatikusan optimalizált autócsoportok minden érkezési és távozási időpontra.

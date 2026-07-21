@@ -30,6 +30,23 @@ let schedule;
 let workersById;
 let carRows = [];
 let leadersByShift = new Map();
+const attendanceStorageKey = "sirok-attendance-session-v1";
+
+function attendanceState() {
+  try {
+    return JSON.parse(sessionStorage.getItem(attendanceStorageKey) || "{}") || {};
+  } catch {
+    return {};
+  }
+}
+
+function saveAttendance(state) {
+  try {
+    sessionStorage.setItem(attendanceStorageKey, JSON.stringify(state));
+  } catch {
+    // The checklist remains usable even when browser storage is disabled.
+  }
+}
 
 menuButton?.addEventListener("click", () => {
   const open = nav.classList.toggle("open");
@@ -138,6 +155,7 @@ function shiftWorkers(shift) {
 }
 
 function renderShiftRosters() {
+  const attendance = attendanceState();
   view.innerHTML = `${pageHeading(
     "Létszámellenőrzés",
     "Kiknek kell jelen lenniük?",
@@ -145,12 +163,56 @@ function renderShiftRosters() {
   )}<div class="grid roster-grid">${schedule.shifts.map((shift) => {
     const workers = shiftWorkers(shift);
     const leaderId = leadersByShift.get(shift.id);
+    const present = workers.filter((worker) => attendance[`${shift.id}:${worker.id}`]).length;
     return `<article class="card shift-roster-card">
-      <div class="shift-roster-head"><div><p class="eyebrow">${escapeHtml(shift.day)}</p><h2>${escapeHtml(shift.start)}–${escapeHtml(shift.end)}</h2></div><span class="headcount">${workers.length} fő</span></div>
+      <div class="shift-roster-head"><div><p class="eyebrow">${escapeHtml(shift.day)}</p><h2>${escapeHtml(shift.start)}–${escapeHtml(shift.end)}</h2></div><span class="headcount" data-attendance-count="${escapeHtml(shift.id)}">${present}/${workers.length} megjelent</span></div>
       ${leaderId ? `<p class="leader-callout">Turnusvezető: ${escapeHtml(workersById.get(leaderId)?.name || "Nincs megadva")}</p>` : '<p class="notice">Nincs turnusvezető kijelölve.</p>'}
-      <ol class="checklist-roster">${workers.map((worker) => `<li class="${worker.id === leaderId ? "shift-leader" : ""}"><span class="check-box" aria-hidden="true"></span><span>${escapeHtml(worker.name)}${worker.id === leaderId ? " · turnusvezető" : ""}</span></li>`).join("")}</ol>
+      <div class="attendance-actions"><button type="button" data-attendance-all="${escapeHtml(shift.id)}">Mind megjelent</button><button type="button" data-attendance-clear="${escapeHtml(shift.id)}">Jelölések törlése</button></div>
+      <ol class="checklist-roster">${workers.map((worker) => {
+        const key = `${shift.id}:${worker.id}`;
+        const checked = Boolean(attendance[key]);
+        return `<li class="${worker.id === leaderId ? "shift-leader " : ""}${checked ? "present" : ""}"><label><input class="attendance-checkbox" type="checkbox" data-attendance-shift="${escapeHtml(shift.id)}" data-attendance-worker="${escapeHtml(worker.id)}" ${checked ? "checked" : ""} /><span>${escapeHtml(worker.name)}${worker.id === leaderId ? " · turnusvezető" : ""}</span></label></li>`;
+      }).join("")}</ol>
     </article>`;
-  }).join("")}</div>`;
+  }).join("")}</div><p class="session-note">A jelenléti pipák csak ebben a böngészőfülben, az aktuális munkamenet idejére maradnak meg.</p>`;
+  bindAttendanceChecklist();
+}
+
+function bindAttendanceChecklist() {
+  const updateCount = (shiftId) => {
+    const checkboxes = [...document.querySelectorAll(`[data-attendance-shift="${CSS.escape(shiftId)}"]`)];
+    const checked = checkboxes.filter((checkbox) => checkbox.checked).length;
+    const counter = document.querySelector(`[data-attendance-count="${CSS.escape(shiftId)}"]`);
+    if (counter) counter.textContent = `${checked}/${checkboxes.length} megjelent`;
+  };
+  const persistCheckbox = (checkbox) => {
+    const state = attendanceState();
+    const key = `${checkbox.dataset.attendanceShift}:${checkbox.dataset.attendanceWorker}`;
+    if (checkbox.checked) state[key] = true;
+    else delete state[key];
+    saveAttendance(state);
+    checkbox.closest("li")?.classList.toggle("present", checkbox.checked);
+    updateCount(checkbox.dataset.attendanceShift);
+  };
+  document.querySelectorAll(".attendance-checkbox").forEach((checkbox) =>
+    checkbox.addEventListener("change", () => persistCheckbox(checkbox)),
+  );
+  document.querySelectorAll("[data-attendance-all]").forEach((button) =>
+    button.addEventListener("click", () => {
+      document.querySelectorAll(`[data-attendance-shift="${CSS.escape(button.dataset.attendanceAll)}"]`).forEach((checkbox) => {
+        checkbox.checked = true;
+        persistCheckbox(checkbox);
+      });
+    }),
+  );
+  document.querySelectorAll("[data-attendance-clear]").forEach((button) =>
+    button.addEventListener("click", () => {
+      document.querySelectorAll(`[data-attendance-shift="${CSS.escape(button.dataset.attendanceClear)}"]`).forEach((checkbox) => {
+        checkbox.checked = false;
+        persistCheckbox(checkbox);
+      });
+    }),
+  );
 }
 
 function peopleCards(workers) {
