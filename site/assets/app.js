@@ -166,7 +166,7 @@ function renderShiftRosters() {
     const present = workers.filter((worker) => attendance[`${shift.id}:${worker.id}`]).length;
     return `<article class="card shift-roster-card">
       <div class="shift-roster-head"><div><p class="eyebrow">${escapeHtml(shift.day)}</p><h2>${escapeHtml(shift.start)}–${escapeHtml(shift.end)}</h2></div><span class="headcount" data-attendance-count="${escapeHtml(shift.id)}">${present}/${workers.length} megjelent</span></div>
-      ${leaderId ? `<p class="leader-callout">Turnusvezető: ${escapeHtml(workersById.get(leaderId)?.name || "Nincs megadva")}</p>` : '<p class="notice">Nincs turnusvezető kijelölve.</p>'}
+      ${leaderId ? "" : '<p class="notice">Nincs turnusvezető kijelölve.</p>'}
       <div class="attendance-actions"><button type="button" data-attendance-all="${escapeHtml(shift.id)}">Mind megjelent</button><button type="button" data-attendance-clear="${escapeHtml(shift.id)}">Jelölések törlése</button></div>
       <ol class="checklist-roster">${workers.map((worker) => {
         const key = `${shift.id}:${worker.id}`;

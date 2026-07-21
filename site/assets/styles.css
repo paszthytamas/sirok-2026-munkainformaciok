@@ -131,7 +131,6 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .shift-roster-head { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1rem 1rem .75rem; }
 .shift-roster-head h2 { margin-bottom: 0; }
 .headcount { display: inline-grid; place-items: center; min-width: 118px; min-height: 40px; padding: .4rem .65rem; border-radius: 999px; color: white; background: var(--green-800); font-size: .78rem; font-weight: 850; white-space: nowrap; }
-.leader-callout { margin: 0 1rem .75rem; padding: .65rem .8rem; border-left: 4px solid var(--red); border-radius: 8px; color: var(--red); background: var(--red-soft); font-weight: 850; }
 .shift-roster-card > .notice { margin: 0 1rem .75rem; }
 .attendance-actions { display: flex; flex-wrap: wrap; gap: .45rem; padding: 0 1rem .75rem; }
 .attendance-actions button { border: 1px solid var(--line); border-radius: 9px; padding: .48rem .65rem; color: var(--green-800); background: white; cursor: pointer; font-size: .76rem; font-weight: 750; }
