@@ -143,35 +143,24 @@ function renderPeople() {
   });
 }
 
-function shiftWorkers(shift) {
-  const workers = byWorkerName(schedule.workers.filter((worker) => worker.assignments[shift.id]));
-  const leaderId = leadersByShift.get(shift.id);
-  if (!leaderId) return workers;
-  return workers.sort((left, right) => {
-    if (left.id === leaderId) return -1;
-    if (right.id === leaderId) return 1;
-    return 0;
-  });
-}
-
 function renderShiftRosters() {
   const attendance = attendanceState();
   view.innerHTML = `${pageHeading(
     "Létszámellenőrzés",
     "Kiknek kell jelen lenniük?",
-    "Turnusonkénti névsor az aktuális turnusvezetővel az első helyen.",
+    "Turnusonkénti, kipipálható névsor ABC-sorrendben, külön megjelölt turnusvezetővel.",
   )}<div class="grid roster-grid">${schedule.shifts.map((shift) => {
-    const workers = shiftWorkers(shift);
+    const workers = byWorkerName(schedule.workers.filter((worker) => worker.assignments[shift.id]));
     const leaderId = leadersByShift.get(shift.id);
     const present = workers.filter((worker) => attendance[`${shift.id}:${worker.id}`]).length;
     return `<article class="card shift-roster-card">
       <div class="shift-roster-head"><div><p class="eyebrow">${escapeHtml(shift.day)}</p><h2>${escapeHtml(shift.start)}–${escapeHtml(shift.end)}</h2></div><span class="headcount" data-attendance-count="${escapeHtml(shift.id)}">${present}/${workers.length} megjelent</span></div>
-      ${leaderId ? "" : '<p class="notice">Nincs turnusvezető kijelölve.</p>'}
+      ${leaderId ? `<p class="leader-callout">Turnusvezető: ${escapeHtml(workersById.get(leaderId)?.name || "Nincs megadva")}</p>` : '<p class="notice">Nincs turnusvezető kijelölve.</p>'}
       <div class="attendance-actions"><button type="button" data-attendance-all="${escapeHtml(shift.id)}">Mind megjelent</button><button type="button" data-attendance-clear="${escapeHtml(shift.id)}">Jelölések törlése</button></div>
       <ol class="checklist-roster">${workers.map((worker) => {
         const key = `${shift.id}:${worker.id}`;
         const checked = Boolean(attendance[key]);
-        return `<li class="${worker.id === leaderId ? "shift-leader " : ""}${checked ? "present" : ""}"><label><input class="attendance-checkbox" type="checkbox" data-attendance-shift="${escapeHtml(shift.id)}" data-attendance-worker="${escapeHtml(worker.id)}" ${checked ? "checked" : ""} /><span>${escapeHtml(worker.name)}${worker.id === leaderId ? " · turnusvezető" : ""}</span></label></li>`;
+        return `<li class="${checked ? "present" : ""}"><label><input class="attendance-checkbox" type="checkbox" data-attendance-shift="${escapeHtml(shift.id)}" data-attendance-worker="${escapeHtml(worker.id)}" ${checked ? "checked" : ""} /><span>${escapeHtml(worker.name)}</span></label></li>`;
       }).join("")}</ol>
     </article>`;
   }).join("")}</div><p class="session-note">A jelenléti pipák csak ebben a böngészőfülben, az aktuális munkamenet idejére maradnak meg.</p>`;
