@@ -234,12 +234,18 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .direction-tabs button { flex: 1; border: 1px solid var(--line); border-radius: 10px; padding: .65rem; background: white; cursor: pointer; }
 .direction-tabs button.active { color: white; background: var(--green-800); }
 .drag-board { display: grid; gap: .85rem; }
+.car-presence-note { display: flex; align-items: center; gap: .55rem; margin: .7rem 0 1rem; padding: .7rem .8rem; border: 1px solid #e2b53c; border-radius: 11px; color: #684900; background: var(--amber-soft); font-size: .82rem; }
+.car-presence-note > span:first-child { font-size: 1.15rem; }
 .dropzone { min-height: 84px; padding: .7rem; border: 2px dashed #bdd0c4; border-radius: 13px; background: #f8fbf9; transition: .15s ease; }
 .dropzone.dragover { border-color: var(--green-700); background: var(--green-100); }
 .dropzone h3 { margin-bottom: .55rem; font-size: .92rem; }
 .worker-chips { display: flex; flex-wrap: wrap; gap: .45rem; }
-.worker-chip { border: 1px solid #cbd8d0; border-radius: 999px; padding: .42rem .65rem; background: white; cursor: grab; font-size: .82rem; font-weight: 680; }
+.worker-chip { display: inline-flex; align-items: center; gap: .4rem; border: 1px solid #cbd8d0; border-radius: 999px; padding: .42rem .65rem; background: white; cursor: grab; font-size: .82rem; font-weight: 680; }
 .worker-chip.selected { color: white; border-color: var(--green-700); background: var(--green-700); }
+.worker-chip.car-on-site { color: #684900; border-color: #d6a21c; background: var(--amber-soft); box-shadow: inset 0 0 0 1px rgba(227,160,8,.18); font-weight: 800; }
+.worker-chip.car-on-site.selected { color: white; border-color: #8a6200; background: #8a6200; }
+.car-presence-badge { padding: .12rem .35rem; border-radius: 999px; color: #684900; background: rgba(255,255,255,.72); font-size: .66rem; font-weight: 850; white-space: nowrap; }
+.worker-chip.car-on-site.selected .car-presence-badge { color: #684900; }
 .worker-chip:active { cursor: grabbing; }
 .admin-car { padding: .85rem; border: 1px solid var(--line); border-radius: 14px; background: white; box-shadow: 0 8px 20px rgba(13,42,32,.06); }
 .car-head { display: flex; justify-content: space-between; gap: .7rem; align-items: center; margin-bottom: .65rem; }

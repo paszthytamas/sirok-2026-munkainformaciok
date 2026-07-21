@@ -2,11 +2,38 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  carDriversPresentAtDeparture,
   movementCompatibility,
   normalizeCarRows,
   payrollSummary,
   suggestCarGroups,
 } from "../site/assets/core.js";
+
+test("carDriversPresentAtDeparture marks the next departure after a driver arrives", () => {
+  const schedule = {
+    boundaries: [
+      { id: "arrival-one", arrivals: ["anna", "bela"], departures: [] },
+      { id: "departure-one", arrivals: [], departures: ["anna"] },
+      { id: "arrival-two", arrivals: ["anna"], departures: [] },
+      { id: "departure-two", arrivals: [], departures: ["anna", "bela"] },
+      { id: "later", arrivals: [], departures: ["anna"] },
+    ],
+  };
+  const rows = [
+    {
+      boundary_id: "arrival-one",
+      payload: { arrivals: { cars: [{ driver: "anna", passengers: ["bela"] }] } },
+    },
+    {
+      boundary_id: "arrival-two",
+      payload: { arrivals: { cars: [{ driver: "anna", passengers: [] }] } },
+    },
+  ];
+
+  assert.deepEqual([...carDriversPresentAtDeparture(schedule, rows, "departure-one")], ["anna"]);
+  assert.deepEqual([...carDriversPresentAtDeparture(schedule, rows, "departure-two")], ["anna"]);
+  assert.deepEqual([...carDriversPresentAtDeparture(schedule, rows, "later")], []);
+});
 
 test("normalizeCarRows keeps every boundary", () => {
   const result = normalizeCarRows(

@@ -41,6 +41,29 @@ export function normalizeCarRows(rows, boundaries) {
   }));
 }
 
+export function carDriversPresentAtDeparture(schedule, rows, targetBoundaryId) {
+  const rowsByBoundary = new Map(
+    (Array.isArray(rows) ? rows : []).map((row) => [row.boundary_id, row.payload || {}]),
+  );
+  const driversOnSite = new Set();
+
+  for (const boundary of schedule.boundaries || []) {
+    if (boundary.id === targetBoundaryId) {
+      return new Set((boundary.departures || []).filter((workerId) => driversOnSite.has(workerId)));
+    }
+
+    for (const workerId of boundary.departures || []) driversOnSite.delete(workerId);
+
+    const arrivingWorkerIds = new Set(boundary.arrivals || []);
+    const arrivalCars = rowsByBoundary.get(boundary.id)?.arrivals?.cars || [];
+    for (const car of arrivalCars) {
+      if (car?.driver && arrivingWorkerIds.has(car.driver)) driversOnSite.add(car.driver);
+    }
+  }
+
+  return new Set();
+}
+
 export function payrollSummary(schedule, worker, response) {
   const entries = new Map((response.entries || []).map((entry) => [entry.shift_id, entry]));
   const fuelByShift = new Map();

@@ -1,5 +1,6 @@
 import {
   byWorkerName,
+  carDriversPresentAtDeparture,
   escapeHtml,
   formatHours,
   formatMoney,
@@ -177,6 +178,9 @@ function renderCarsAdmin() {
   const eligibleIds = sortedWorkerIds(currentDirectionIds(), workersById);
   const usedIds = new Set(currentCars().flatMap((car) => [car.driver, ...(car.passengers || [])]).filter(Boolean));
   const unassigned = eligibleIds.filter((id) => !usedIds.has(id));
+  const driversOnSite = activeDirection === "departures"
+    ? carDriversPresentAtDeparture(schedule, carRows(), boundary.id)
+    : new Set();
   const workspace = document.querySelector("#admin-workspace");
   workspace.innerHTML = `<div class="admin-layout">
     <aside class="card admin-sidebar">
@@ -190,29 +194,31 @@ function renderCarsAdmin() {
     </aside>
     <section class="card admin-content">
       <p class="eyebrow">${activeDirection === "arrivals" ? "Érkezés" : "Távozás"}</p><h1>${escapeHtml(boundary.label)}</h1>
+      ${driversOnSite.size ? '<p class="car-presence-note"><span aria-hidden="true">🚗</span><span>A sárgával jelölt dolgozó korábban sofőrként érkezett, ezért ennél a távozásnál <strong>sofőrként oszd be</strong>.</span></p>' : ""}
       <div class="drag-board">
-        ${dropZone("Nincs autóhoz rendelve", "unassigned", "", unassigned)}
-        ${currentCars().map((car, index) => carEditor(car, index)).join("")}
+        ${dropZone("Nincs autóhoz rendelve", "unassigned", "", unassigned, "", driversOnSite)}
+        ${currentCars().map((car, index) => carEditor(car, index, driversOnSite)).join("")}
       </div>
     </section>
   </div>`;
   bindCarsAdmin();
 }
 
-function workerChip(id) {
-  return `<button class="worker-chip ${selectedWorkerId === id ? "selected" : ""}" type="button" draggable="true" data-worker-id="${escapeHtml(id)}">${escapeHtml(workersById.get(id)?.name || id)}</button>`;
+function workerChip(id, driversOnSite) {
+  const hasCarOnSite = driversOnSite.has(id);
+  return `<button class="worker-chip${selectedWorkerId === id ? " selected" : ""}${hasCarOnSite ? " car-on-site" : ""}" type="button" draggable="true" data-worker-id="${escapeHtml(id)}"${hasCarOnSite ? ' title="Autóval van jelen – sofőrként távozzon"' : ""}><span>${escapeHtml(workersById.get(id)?.name || id)}</span>${hasCarOnSite ? '<span class="car-presence-badge">🚗 autóval jelen</span>' : ""}</button>`;
 }
 
-function dropZone(title, target, carId, ids, extraClass = "") {
-  return `<div class="dropzone ${extraClass}" data-drop-target="${target}" data-car-id="${escapeHtml(carId)}"><h3>${escapeHtml(title)}</h3><div class="worker-chips">${ids.map(workerChip).join("")}</div>${target !== "unassigned" ? '<button class="tap-target" type="button" data-tap-target="' + target + '" data-car-id="' + escapeHtml(carId) + '">Kijelölt ide helyezése</button>' : ""}</div>`;
+function dropZone(title, target, carId, ids, extraClass = "", driversOnSite = new Set()) {
+  return `<div class="dropzone ${extraClass}" data-drop-target="${target}" data-car-id="${escapeHtml(carId)}"><h3>${escapeHtml(title)}</h3><div class="worker-chips">${ids.map((id) => workerChip(id, driversOnSite)).join("")}</div>${target !== "unassigned" ? '<button class="tap-target" type="button" data-tap-target="' + target + '" data-car-id="' + escapeHtml(carId) + '">Kijelölt ide helyezése</button>' : ""}</div>`;
 }
 
-function carEditor(car, index) {
+function carEditor(car, index, driversOnSite) {
   const driverIds = car.driver ? [car.driver] : [];
   return `<article class="admin-car">
     <div class="car-head"><h3>Autó ${index + 1}</h3><button class="button button-danger" type="button" data-remove-car="${escapeHtml(car.id)}">Törlés</button></div>
-    ${dropZone("Sofőr", "driver", car.id, driverIds, "driver-zone")}
-    ${dropZone("Utasok", "passengers", car.id, car.passengers || [])}
+    ${dropZone("Sofőr", "driver", car.id, driverIds, "driver-zone", driversOnSite)}
+    ${dropZone("Utasok", "passengers", car.id, car.passengers || [], "", driversOnSite)}
     <div class="field fuel-field"><label>Üzemanyagdíj a sofőrnek (Ft)</label><input type="number" min="0" step="100" value="${Number(car.fuelFee || 0)}" data-fuel-car="${escapeHtml(car.id)}" /></div>
   </article>`;
 }
