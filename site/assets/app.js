@@ -34,8 +34,7 @@ let workersById;
 let carRows = [];
 let leadersByShift = new Map();
 const attendanceStorageKey = "sirok-attendance-session-v1";
-const contactsStorageKey = "sirok-contacts-session-v1";
-let contactsByWorkerId = loadContactDirectory();
+let contactsByWorkerId = new Map();
 
 function attendanceState() {
   try {
@@ -53,33 +52,6 @@ function saveAttendance(state) {
   }
 }
 
-function loadContactDirectory() {
-  try {
-    const contacts = JSON.parse(sessionStorage.getItem(contactsStorageKey) || "[]");
-    return new Map((Array.isArray(contacts) ? contacts : []).map((contact) => [contact.worker_id, contact]));
-  } catch {
-    return new Map();
-  }
-}
-
-function saveContactDirectory(contacts) {
-  contactsByWorkerId = new Map(contacts.map((contact) => [contact.worker_id, contact]));
-  try {
-    sessionStorage.setItem(contactsStorageKey, JSON.stringify(contacts));
-  } catch {
-    // The contact list remains usable even when browser storage is disabled.
-  }
-}
-
-function clearContactDirectory() {
-  contactsByWorkerId = new Map();
-  try {
-    sessionStorage.removeItem(contactsStorageKey);
-  } catch {
-    // Nothing else is required when browser storage is disabled.
-  }
-}
-
 function hashParams() {
   return new URLSearchParams(location.hash.split("?")[1] || "");
 }
@@ -89,7 +61,7 @@ function workerPhoneLink(workerId, extraClass = "") {
   const contact = contactsByWorkerId.get(workerId);
   const name = escapeHtml(worker?.name || workerId);
   if (!worker) return name;
-  if (!contact?.phone_e164) return `<a class="phone-link phone-link-locked" href="#kontaktok?worker=${encodeURIComponent(workerId)}" title="Telefonszám feloldása">${name}</a>`;
+  if (!contact?.phone_e164) return `<span class="phone-link-missing" title="Nincs megadott telefonszám">${name}</span>`;
   return `<a class="phone-link${extraClass ? ` ${extraClass}` : ""}" href="tel:${escapeHtml(contact.phone_e164)}" title="${escapeHtml(contact.phone_display || contact.phone_e164)} hívása">${name}</a>`;
 }
 
@@ -200,7 +172,7 @@ function renderWorkerOverview() {
   const rides = workerRideTimeline(schedule, carRows, worker.id);
   const callAction = contact?.phone_e164
     ? `<a class="button call-button" href="tel:${escapeHtml(contact.phone_e164)}">☎ ${escapeHtml(contact.phone_display || contact.phone_e164)}</a>`
-    : `<a class="button button-secondary" href="#kontaktok?worker=${encodeURIComponent(worker.id)}">Telefonszám megnyitása</a>`;
+    : `<a class="button button-secondary" href="#kontaktok?worker=${encodeURIComponent(worker.id)}">Kontaktlista megnyitása</a>`;
 
   view.innerHTML = `${pageHeading(
     "Dolgozói összesítő",
@@ -247,13 +219,12 @@ function renderWorkerRide(ride) {
   const directionLabel = arriving ? "Érkezés" : "Távozás";
   let assignment = '<p class="notice">Még nincs autóhoz rendelve.</p>';
   if (ride.assigned) {
-    const role = ride.role === "driver"
-      ? '<strong class="ride-role driver-role">🚗 Sofőr</strong>'
-      : `<span class="ride-role">Utas · sofőr: ${ride.driverId ? workerPhoneLink(ride.driverId) : "nincs kijelölve"}</span>`;
-    const companions = ride.companionIds.length
-      ? `<ul>${ride.companionIds.map((id) => `<li>${workerPhoneLink(id)}</li>`).join("")}</ul>`
-      : '<p class="empty">Egyedül utazik.</p>';
-    assignment = `${role}<div class="ride-companions"><b>Vele utazik:</b>${companions}</div>`;
+    const statusLabel = ride.role === "driver" ? "sofőr" : "utas";
+    const members = ride.memberIds.length
+      ? `<ol class="car-member-list">${ride.memberIds.map((id) => `<li class="${id === ride.driverId ? "driver-member" : "passenger-member"}"><span>${workerPhoneLink(id)}</span>${id === ride.driverId ? '<span class="driver-badge" title="Sofőr">🚗 sofőr</span>' : ""}</li>`).join("")}</ol>`
+      : '<p class="empty">Nincs rögzített utazó.</p>';
+    const driverNotice = ride.driverId ? "" : '<p class="notice">Ehhez az autóhoz még nincs sofőr kijelölve.</p>';
+    assignment = `<p class="ride-status">Státusz: <strong class="${ride.role === "driver" ? "driver-role" : ""}">${statusLabel}</strong></p>${driverNotice}<div class="ride-companions"><b>Vele utazik:</b>${members}</div>`;
   }
   return `<article class="worker-ride-event ${arriving ? "ride-arrival" : "ride-departure"}">
     <div class="worker-ride-head"><span class="badge ${arriving ? "badge-in" : "badge-out"}">${directionLabel}</span><strong>${escapeHtml(ride.boundaryLabel)}</strong></div>
@@ -442,6 +413,22 @@ async function loadLeaders() {
   return new Map(rows.filter((row) => row.worker_id).map((row) => [row.shift_id, row.worker_id]));
 }
 
+async function loadContacts() {
+  if (!(config.supabaseUrl && config.supabaseAnonKey)) return new Map();
+  try {
+    const response = await fetch(
+      `${config.supabaseUrl}/rest/v1/worker_contacts?select=worker_id,name,phone_e164,phone_display,note&order=name`,
+      { headers: { apikey: config.supabaseAnonKey } },
+    );
+    if (!response.ok) throw new Error("A kontaktlista nem érhető el.");
+    const contacts = await response.json();
+    return new Map(contacts.map((contact) => [contact.worker_id, contact]));
+  } catch (error) {
+    console.warn(error);
+    return new Map();
+  }
+}
+
 function renderCars() {
   const byBoundary = new Map(carRows.map((row) => [row.boundary_id, row.payload]));
   const sections = schedule.boundaries
@@ -462,7 +449,7 @@ function renderCars() {
     "4. nézet",
     "Autóbeosztások",
     "A sofőr és a vele utazók turnusváltásonként, külön az érkezéshez és a távozáshoz.",
-  )}${contactsByWorkerId.size ? "" : '<p class="notice contact-unlock-note">A telefonszámok védettek. <a href="#kontaktok">Nyisd meg a kontaktlistát</a> egy dolgozói jelszóval; ezután az autóbeosztás nevei közvetlenül hívhatók lesznek.</p>'}<div class="cars-public">${sections || '<div class="notice">Az autóbeosztások még nem készültek el.</div>'}</div>`;
+  )}<div class="cars-public">${sections || '<div class="notice">Az autóbeosztások még nem készültek el.</div>'}</div>`;
 }
 
 function renderLeaders() {
@@ -492,22 +479,20 @@ function publicRideSection(title, cars, badgeClass) {
 }
 
 function renderContacts() {
-  if (!contactsByWorkerId.size) {
-    renderContactsLogin();
-    return;
-  }
   const requestedId = hashParams().get("worker");
   const contacts = byWorkerName(
-    [...contactsByWorkerId.values()]
-      .map((contact) => ({ ...contact, name: workersById.get(contact.worker_id)?.name || contact.name }))
-      .filter((contact) => workersById.has(contact.worker_id)),
+    schedule.workers.map((worker) => ({
+      worker_id: worker.id,
+      name: worker.name,
+      ...(contactsByWorkerId.get(worker.id) || {}),
+    })),
   );
   if (requestedId) contacts.sort((left, right) => left.worker_id === requestedId ? -1 : right.worker_id === requestedId ? 1 : 0);
   view.innerHTML = `${pageHeading(
-    "Védett névjegyzék",
+    "Nyilvános névjegyzék",
     "Kontaktlista",
-    "A telefonszámok csak érvényes dolgozói jelszó után, az aktuális böngésző-munkamenetben láthatók.",
-    '<div class="contact-tools"><input id="contact-search" class="input search-field" type="search" placeholder="Keresés név szerint…" aria-label="Keresés a kontaktok között" /><button id="contacts-lock" class="button button-secondary" type="button">Kontaktok bezárása</button></div>',
+    "A Supabase-ből betöltött telefonszámok mobilon egy érintéssel hívhatók.",
+    '<input id="contact-search" class="input search-field" type="search" placeholder="Keresés név szerint…" aria-label="Keresés a kontaktok között" />',
   )}<div id="contact-grid" class="grid contact-grid">${contactCards(contacts, requestedId)}</div>`;
   document.querySelector("#contact-search").addEventListener("input", (event) => {
     const query = event.target.value.trim().toLocaleLowerCase("hu-HU");
@@ -516,63 +501,13 @@ function renderContacts() {
       requestedId,
     );
   });
-  document.querySelector("#contacts-lock").addEventListener("click", () => {
-    clearContactDirectory();
-    renderContactsLogin();
-  });
-}
-
-function renderContactsLogin() {
-  const configured = Boolean(config.supabaseUrl && config.supabaseAnonKey);
-  const requestedId = hashParams().get("worker");
-  const requestedWorker = workersById.get(requestedId);
-  view.innerHTML = `${pageHeading(
-    "Védett névjegyzék",
-    "Kontaktlista",
-    requestedWorker
-      ? `${requestedWorker.name} telefonszámának megnyitásához jelentkezz be egy érvényes dolgozói jelszóval.`
-      : "A kontaktlistát bármelyik érvényes dolgozói jelszó megnyitja az aktuális böngésző-munkamenetre.",
-  )}<article class="card login-card">
-    <h2>Kontaktok feloldása</h2>
-    ${configured ? "" : '<p class="notice">A biztonságos kontaktlista-háttér még nincs összekapcsolva az oldallal.</p>'}
-    <form id="contacts-login-form">
-      <div class="field"><label for="contacts-password">Személyes dolgozói jelszó</label><input id="contacts-password" type="password" minlength="12" autocomplete="current-password" required /></div>
-      <button class="button" type="submit" ${configured ? "" : "disabled"}>Kontaktlista megnyitása</button>
-      <div id="contacts-login-message" aria-live="polite"></div>
-    </form>
-  </article>`;
-  if (configured) document.querySelector("#contacts-login-form").addEventListener("submit", submitContactsLogin);
-}
-
-async function submitContactsLogin(event) {
-  event.preventDefault();
-  const button = event.currentTarget.querySelector("button");
-  const message = document.querySelector("#contacts-login-message");
-  button.disabled = true;
-  message.innerHTML = '<p class="notice">Ellenőrzés…</p>';
-  try {
-    const response = await fetch(`${config.supabaseUrl}/functions/v1/contacts-login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json", apikey: config.supabaseAnonKey },
-      body: JSON.stringify({ password: document.querySelector("#contacts-password").value }),
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) throw new Error(payload.error || "Sikertelen belépés.");
-    saveContactDirectory(Array.isArray(payload.contacts) ? payload.contacts : []);
-    if (!contactsByWorkerId.size) throw new Error("A kontaktlista még nincs feltöltve.");
-    renderContacts();
-  } catch (error) {
-    clearContactDirectory();
-    message.innerHTML = `<p class="notice error">${escapeHtml(error.message)}</p>`;
-    button.disabled = false;
-  }
 }
 
 function contactCards(contacts, requestedId) {
   if (!contacts.length) return '<div class="notice">Nincs találat.</div>';
   return contacts.map((contact) => `<article class="card contact-card${contact.worker_id === requestedId ? " requested" : ""}">
     <div><p class="eyebrow">Dolgozó</p><h2>${escapeHtml(contact.name)}</h2>${contact.note ? `<p>${escapeHtml(contact.note)}</p>` : ""}</div>
-    <a class="contact-phone" href="tel:${escapeHtml(contact.phone_e164)}"><span>☎</span><strong>${escapeHtml(contact.phone_display || contact.phone_e164)}</strong></a>
+    ${contact.phone_e164 ? `<a class="contact-phone" href="tel:${escapeHtml(contact.phone_e164)}"><span>☎</span><strong>${escapeHtml(contact.phone_display || contact.phone_e164)}</strong></a>` : '<p class="contact-missing">Nincs telefonszám feltöltve.</p>'}
     <a class="person-details-link" href="#dolgozo?worker=${encodeURIComponent(contact.worker_id)}">Teljes dolgozói adatlap →</a>
   </article>`).join("");
 }
@@ -626,7 +561,6 @@ async function submitPayrollLogin(event) {
     if (!response.ok) throw new Error(payload.error || "Sikertelen belépés.");
     const worker = workersById.get(payload.workerId);
     if (!worker) throw new Error("Ehhez a jelszóhoz nem található aktív beosztás.");
-    if (Array.isArray(payload.contacts) && payload.contacts.length) saveContactDirectory(payload.contacts);
     renderPayroll(worker, payload);
   } catch (error) {
     message.innerHTML = `<p class="notice error">${escapeHtml(error.message)}</p>`;
@@ -645,11 +579,11 @@ function renderPayroll(worker, response) {
   <div class="stats payroll-summary">
     <div class="stat"><b>${formatHours(summary.scheduledHours)}</b><span>tervezett munka</span></div>
     <div class="stat"><b>${summary.adjustmentHours >= 0 ? "+" : ""}${formatHours(summary.adjustmentHours)}</b><span>órakorrekció</span></div>
-    <div class="stat"><b>${formatMoney(summary.fuelFees)}</b><span>üzemanyagdíj</span></div>
+    <div class="stat"><b>${formatMoney(summary.fuelFees)}</b><span>utazási díj</span></div>
     <div class="stat"><b>${formatMoney(summary.total)}</b><span>fizetendő összesen</span></div>
   </div>
   <div class="card table-card payroll-table-wrap"><table class="payroll-table">
-    <thead><tr><th>Turnus</th><th>Tervezett</th><th>Eltérés</th><th>Elszámolt</th><th>Munkadíj</th><th>Üzemanyag</th><th>Összesen</th></tr></thead>
+    <thead><tr><th>Turnus</th><th>Tervezett</th><th>Eltérés</th><th>Elszámolt</th><th>Munkadíj</th><th>Utazási díj</th><th>Összesen</th></tr></thead>
     <tbody>${summary.rows.map((row) => `<tr><td><b>${escapeHtml(row.shift.day)} ${escapeHtml(row.shift.start)}–${escapeHtml(row.shift.end)}</b>${row.note ? `<br /><small>${escapeHtml(row.note)}</small>` : ""}</td><td>${formatHours(row.scheduledHours)}</td><td>${row.adjustmentHours > 0 ? "+" : ""}${formatHours(row.adjustmentHours)}</td><td>${formatHours(row.paidHours)}</td><td>${formatMoney(row.wage)}</td><td>${formatMoney(row.fuelFee)}</td><td><b>${formatMoney(row.total)}</b></td></tr>`).join("")}</tbody>
     <tfoot><tr><td>Összesen</td><td>${formatHours(summary.scheduledHours)}</td><td>${summary.adjustmentHours > 0 ? "+" : ""}${formatHours(summary.adjustmentHours)}</td><td>${formatHours(summary.paidHours)}</td><td>${formatMoney(summary.wages)}</td><td>${formatMoney(summary.fuelFees)}</td><td>${formatMoney(summary.total)}</td></tr></tfoot>
   </table></div>`;
@@ -680,7 +614,7 @@ async function boot() {
     if (!response.ok) throw new Error("A beosztás adatfájlja nem érhető el.");
     schedule = await response.json();
     workersById = new Map(schedule.workers.map((worker) => [worker.id, worker]));
-    [carRows, leadersByShift] = await Promise.all([loadCars(), loadLeaders()]);
+    [carRows, leadersByShift, contactsByWorkerId] = await Promise.all([loadCars(), loadLeaders(), loadContacts()]);
     status.hidden = true;
     await renderRoute();
   } catch (error) {

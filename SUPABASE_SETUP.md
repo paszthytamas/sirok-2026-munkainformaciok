@@ -3,7 +3,7 @@
 A weboldal két részből áll:
 
 - a **GitHub Pages** szolgálja ki a mobilbarát weboldalt;
-- a **Supabase** tárolja a védett admin-, jelszó-, fizetési, autó- és turnusvezetői adatokat, valamint futtatja a szerveroldali ellenőrzést.
+- a **Supabase** tárolja a védett admin-, jelszó- és fizetési adatokat, az autó- és turnusvezetői beosztásokat, valamint a nyilvánosan olvasható kontaktlistát.
 
 A Supabase-kód forrása ugyanebben a GitHub repositoryban található. A `.github/workflows/deploy-supabase.yml` workflow a GitHubról automatikusan telepíti az adatbázis-migrációkat és az Edge Functionöket a Supabase-projektbe.
 
@@ -75,7 +75,7 @@ A workflow a következőket végzi el:
 1. összekapcsolja a repositoryt a Supabase-projekttel;
 2. lefuttatja a `supabase/migrations` könyvtár migrációit;
 3. beállítja a `PASSWORD_PEPPER` és `ALLOWED_ORIGIN` Edge Function titkokat;
-4. telepíti az `admin-api`, `payroll-login` és `contacts-login` Edge Functionöket.
+4. telepíti az `admin-api`, `payroll-login` és a repositoryban található további Edge Functionöket.
 
 Később a `supabase/**` fájlok `main` ágra történő módosítása ugyanezt automatikusan elindítja.
 
@@ -116,7 +116,7 @@ Az **Autóbeosztások** fülön:
 - automatikus utazócsoport készíthető;
 - drag-and-drop módszerrel módosítható a csoport;
 - kijelölhető a sofőr;
-- megadható a sofőr üzemanyagdíja.
+- megadható a sofőr adott útra járó utazási díja.
 
 ### Turnusvezetők
 
@@ -128,16 +128,23 @@ Közvetlen cím:
 
 ### Dolgozói fizetési jelszavak
 
-A **Fizetések** fülön:
+A jelszó nem a Supabase Dashboardban olvasható lista, hanem az adminoldalon állítható be személyenként:
 
-1. válaszd ki a dolgozót;
-2. generálj vagy írj be legalább 12 karakteres személyes jelszót;
-3. másold ki, és biztonságos csatornán add át a dolgozónak;
-4. kattints a **Jelszó beállítása** gombra.
+1. nyisd meg az adminoldalt, és lépj be az admin e-mail-címeddel és adminjelszavaddal;
+2. nyisd meg a **Fizetések** fület, vagy közvetlenül az `/admin/#payroll` címet;
+3. a **Dolgozó** mezőben válaszd ki azt, akinek jelszót adsz;
+4. kattints az **Erős jelszó generálása** gombra, vagy írj be egy egyedi, legalább 12 karakteres jelszót;
+5. a **Másolás** gombbal másold ki, és még mentés előtt add át biztonságos csatornán a dolgozónak;
+6. kattints a **Jelszó beállítása** gombra;
+7. a dolgozó a nyilvános oldal **Fizetésem** menüpontjában kizárólag ezt a jelszót írja be; külön felhasználónév nem szükséges.
 
 A már elmentett jelszó **nem olvasható vissza**. Az adatbázis csak sózott jelszókivonatot tárol. Az admin azt látja, hogy van-e jelszó beállítva. Elfelejtett jelszó esetén újat kell beállítani.
 
-## 9. Védett kontaktlista feltöltése
+### Költségösszesítő
+
+A **Költségösszesítő** fülön személyenként látható a munkadíj, az utazási díj és a teljes fizetendő összeg, valamint felül az összes kiadás. Az utazási díjak utanként, a sofőr neve alatt szerkeszthetők. A 0 Ft-os, még kitöltetlen sofőrös utakat sárga jelölés mutatja. Ugyanez a díj az **Autóbeosztások** fül adott autójánál is módosítható.
+
+## 9. Nyilvános kontaktlista feltöltése
 
 1. Töltsd le és nyisd meg a `data/Sirok 2026 kontaktok - sablon.xlsx` fájlt.
 2. A neveket ne módosítsd; töltsd ki a `Telefonszám` oszlopot szövegként, lehetőleg `+36301234567` formában.
@@ -145,9 +152,9 @@ A már elmentett jelszó **nem olvasható vissza**. Az adatbázis csak sózott j
 4. Töltsd fel a privát repository `data` könyvtárába.
 5. A feltöltés automatikusan elindítja a **Kontaktlista szinkronizálása** workflow-t. Szükség esetén az Actions oldalról kézzel is futtatható.
 
-A telefonszámok nem kerülnek a GitHub Pages statikus fájljaiba. A workflow a `SUPABASE_SERVICE_ROLE_KEY` secret segítségével a védett `worker_contacts` táblát frissíti. Ezt a kulcsot soha ne add meg GitHub Variable-ként, ne írd fájlba, és ne építsd be a weboldalba.
+A telefonszámok nem kerülnek a GitHub Pages statikus fájljaiba. A workflow a `SUPABASE_SERVICE_ROLE_KEY` secret segítségével frissíti a `worker_contacts` táblát. Ezt a kulcsot soha ne add meg GitHub Variable-ként, ne írd fájlba, és ne építsd be a weboldalba.
 
-A nyilvános oldalon a **Kontaktlista** menüpontot bármelyik érvényes dolgozói jelszó feloldja az adott böngészőfül munkamenetére. Feloldás után az Autóbeosztás és a Dolgozói adatlap nevei közvetlen telefonhivatkozássá válnak.
+A `202607220004_public_worker_contacts.sql` migráció után a tábla olvasása nyilvános, de a látogatók nem írhatják és nem törölhetik az adatokat. A **Kontaktlista**, az **Autóbeosztás** és a **Dolgozói adatlap** nevei ezután jelszó nélkül közvetlen telefonhivatkozássá válnak.
 
 ## 10. Gyors hibakeresés
 
@@ -156,7 +163,7 @@ A nyilvános oldalon a **Kontaktlista** menüpontot bármelyik érvényes dolgoz
 - **Hiányzik a `shift_leaders` tábla:** futtasd a Supabase backend workflow-t, hogy a migrációk települjenek.
 - **CORS-hiba:** a `PUBLIC_SITE_ORIGIN` pontosan `https://paszthytamas.github.io` legyen, lezáró perjel és repository-útvonal nélkül.
 - **A dolgozói fizetési belépés nem működik:** ellenőrizd, hogy a `PASSWORD_PEPPER` beállt-e, és a `payroll-login` függvény települt-e.
-- **A kontaktlista üres vagy nem nyílik meg:** ellenőrizd a `worker_contacts` migrációt, a `contacts-login` függvényt és a Kontaktlista szinkronizálása workflow eredményét.
+- **A kontaktlista üres:** ellenőrizd a `202607220004_public_worker_contacts.sql` migrációt és a **Kontaktlista szinkronizálása** workflow eredményét.
 
 Hivatalos dokumentáció:
 

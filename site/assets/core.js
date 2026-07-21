@@ -78,7 +78,7 @@ export function workerRideTimeline(schedule, rows, workerId) {
         item?.driver === workerId || (item?.passengers || []).includes(workerId),
       );
       const memberIds = car
-        ? [car.driver, ...(car.passengers || [])].filter(Boolean)
+        ? [...new Set([car.driver, ...(car.passengers || [])].filter(Boolean))]
         : [];
       timeline.push({
         boundaryId: boundary.id,
@@ -87,12 +87,87 @@ export function workerRideTimeline(schedule, rows, workerId) {
         assigned: Boolean(car),
         role: car ? (car.driver === workerId ? "driver" : "passenger") : null,
         driverId: car?.driver || null,
+        memberIds,
         companionIds: memberIds.filter((id) => id !== workerId),
       });
     }
   }
 
   return timeline;
+}
+
+export function adminCostSummary(schedule, carRows, payrollEntries, hourlyRate) {
+  const rate = Math.max(0, Number(hourlyRate) || 0);
+  const adjustments = new Map(
+    (Array.isArray(payrollEntries) ? payrollEntries : []).map((entry) => [
+      `${entry.worker_id}:${entry.shift_id}`,
+      Number(entry.adjustment_hours || 0),
+    ]),
+  );
+  const rowsByBoundary = new Map(
+    (Array.isArray(carRows) ? carRows : []).map((row) => [row.boundary_id, row.payload || {}]),
+  );
+  const tripsByWorker = new Map();
+
+  for (const boundary of schedule.boundaries || []) {
+    const payload = rowsByBoundary.get(boundary.id) || {};
+    for (const direction of ["arrivals", "departures"]) {
+      for (const [carIndex, car] of (payload[direction]?.cars || []).entries()) {
+        if (!car?.driver) continue;
+        const rawAmount = Number(car.fuelFee || 0);
+        const amount = Number.isFinite(rawAmount) ? Math.max(0, rawAmount) : 0;
+        const trip = {
+          boundaryId: boundary.id,
+          boundaryLabel: boundary.label,
+          direction,
+          carId: car.id || `${boundary.id}-${direction}-${carIndex}`,
+          carIndex,
+          shiftId: car.shiftId || (direction === "arrivals" ? boundary.currentShiftId : boundary.previousShiftId) || null,
+          amount,
+        };
+        const trips = tripsByWorker.get(car.driver) || [];
+        trips.push(trip);
+        tripsByWorker.set(car.driver, trips);
+      }
+    }
+  }
+
+  const rows = byWorkerName(schedule.workers || []).map((worker) => {
+    const shifts = (schedule.shifts || []).filter((shift) => worker.assignments?.[shift.id]);
+    const scheduledHours = shifts.reduce((sum, shift) => sum + Number(shift.durationHours || 0), 0);
+    const adjustmentHours = shifts.reduce(
+      (sum, shift) => sum + (adjustments.get(`${worker.id}:${shift.id}`) || 0),
+      0,
+    );
+    const paidHours = scheduledHours + adjustmentHours;
+    const wages = paidHours * rate;
+    const trips = tripsByWorker.get(worker.id) || [];
+    const travelFees = trips.reduce((sum, trip) => sum + trip.amount, 0);
+    return {
+      worker,
+      scheduledHours,
+      adjustmentHours,
+      paidHours,
+      wages,
+      trips,
+      travelFees,
+      missingTravelFees: trips.filter((trip) => trip.amount <= 0).length,
+      total: wages + travelFees,
+    };
+  });
+
+  return {
+    hourlyRate: rate,
+    rows,
+    scheduledHours: rows.reduce((sum, row) => sum + row.scheduledHours, 0),
+    adjustmentHours: rows.reduce((sum, row) => sum + row.adjustmentHours, 0),
+    paidHours: rows.reduce((sum, row) => sum + row.paidHours, 0),
+    wages: rows.reduce((sum, row) => sum + row.wages, 0),
+    travelFees: rows.reduce((sum, row) => sum + row.travelFees, 0),
+    total: rows.reduce((sum, row) => sum + row.total, 0),
+    tripCount: rows.reduce((sum, row) => sum + row.trips.length, 0),
+    missingTravelFees: rows.reduce((sum, row) => sum + row.missingTravelFees, 0),
+  };
 }
 
 export function payrollSummary(schedule, worker, response) {

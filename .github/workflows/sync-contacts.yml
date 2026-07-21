@@ -70,4 +70,4 @@ jobs:
 
       - name: Eredmény
         if: steps.workbook.outputs.exists == 'true'
-        run: echo "A védett kontaktlista sikeresen frissült." >> "$GITHUB_STEP_SUMMARY"
+        run: echo "A nyilvános kontaktlista sikeresen frissült." >> "$GITHUB_STEP_SUMMARY"

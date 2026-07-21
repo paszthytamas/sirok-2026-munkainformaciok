@@ -34,11 +34,10 @@ Deno.serve(async (request) => {
     const password = typeof body.password === "string" ? body.password : "";
     const workerId = await authenticateWorkerPassword(password);
     if (!workerId) return jsonResponse({ error: "Hibás jelszó." }, 401);
-    const [settings, entries, cars, contacts] = await Promise.all([
+    const [settings, entries, cars] = await Promise.all([
       serviceJson("/rest/v1/app_settings?key=eq.hourly_rate&select=value&limit=1"),
       serviceJson(`/rest/v1/payroll_entries?worker_id=eq.${encodeURIComponent(workerId)}&select=shift_id,adjustment_hours,note&order=shift_id`),
       serviceJson("/rest/v1/car_assignments?select=boundary_id,payload"),
-      serviceJson("/rest/v1/worker_contacts?select=worker_id,name,phone_e164,phone_display,note&order=name"),
     ]);
     const setting = settings[0] as { value?: unknown } | undefined;
     return jsonResponse({
@@ -46,7 +45,6 @@ Deno.serve(async (request) => {
       hourlyRate: Number(setting?.value || 0),
       entries,
       fuelEntries: fuelEntries(cars as CarRow[], workerId),
-      contacts,
     });
   } catch (error) {
     console.error(error);

@@ -1,4 +1,5 @@
 import {
+  adminCostSummary,
   byWorkerName,
   carDriversPresentAtDeparture,
   escapeHtml,
@@ -17,7 +18,9 @@ const online = Boolean(config.supabaseUrl && config.supabaseAnonKey);
 let schedule;
 let workersById;
 let sessionToken = "";
-let activeTab = location.hash === "#leaders" ? "leaders" : "cars";
+const adminTabs = new Set(["cars", "leaders", "payroll", "costs"]);
+const requestedAdminTab = location.hash.replace(/^#/, "");
+let activeTab = adminTabs.has(requestedAdminTab) ? requestedAdminTab : "cars";
 let activeBoundaryId = "";
 let activeDirection = "arrivals";
 let selectedWorkerId = "";
@@ -27,6 +30,7 @@ let payrollEntries = [];
 let credentialWorkers = new Set();
 let hourlyRate = 0;
 let leadersByShift = new Map();
+const dirtyTravelFeeBoundaries = new Set();
 
 const localKeys = {
   cars: "sirok-admin-cars-v1",
@@ -137,13 +141,14 @@ function renderAdmin() {
       <button type="button" data-tab="cars" class="${activeTab === "cars" ? "active" : ""}">Autóbeosztások</button>
       <button type="button" data-tab="leaders" class="${activeTab === "leaders" ? "active" : ""}">Turnusvezetők</button>
       <button type="button" data-tab="payroll" class="${activeTab === "payroll" ? "active" : ""}">Fizetések</button>
+      <button type="button" data-tab="costs" class="${activeTab === "costs" ? "active" : ""}">Költségösszesítő</button>
       ${online ? '<button type="button" id="admin-logout">Kijelentkezés</button>' : ""}
     </div>
     <div id="admin-workspace"></div>`;
   root.querySelectorAll("[data-tab]").forEach((button) =>
     button.addEventListener("click", () => {
       activeTab = button.dataset.tab;
-      location.hash = activeTab === "leaders" ? "leaders" : "";
+      location.hash = activeTab === "cars" ? "" : activeTab;
       renderAdmin();
     }),
   );
@@ -154,6 +159,7 @@ function renderAdmin() {
   if (activeTab === "cars") renderCarsAdmin();
   if (activeTab === "leaders") renderLeadersAdmin();
   if (activeTab === "payroll") renderPayrollAdmin();
+  if (activeTab === "costs") renderCostSummaryAdmin();
 }
 
 function currentBoundary() {
@@ -219,7 +225,7 @@ function carEditor(car, index, driversOnSite) {
     <div class="car-head"><h3>Autó ${index + 1}</h3><button class="button button-danger" type="button" data-remove-car="${escapeHtml(car.id)}">Törlés</button></div>
     ${dropZone("Sofőr", "driver", car.id, driverIds, "driver-zone", driversOnSite)}
     ${dropZone("Utasok", "passengers", car.id, car.passengers || [], "", driversOnSite)}
-    <div class="field fuel-field"><label>Üzemanyagdíj a sofőrnek (Ft)</label><input type="number" min="0" step="100" value="${Number(car.fuelFee || 0)}" data-fuel-car="${escapeHtml(car.id)}" /></div>
+    <div class="field fuel-field"><label>Utazási díj a sofőrnek (Ft)</label><input type="number" min="0" step="100" value="${Number(car.fuelFee || 0)}" data-fuel-car="${escapeHtml(car.id)}" /></div>
   </article>`;
 }
 
@@ -277,7 +283,10 @@ function bindCarsAdmin() {
   document.querySelectorAll("[data-fuel-car]").forEach((input) =>
     input.addEventListener("change", () => {
       const car = currentCars().find((item) => item.id === input.dataset.fuelCar);
-      if (car) car.fuelFee = Math.max(0, Number(input.value || 0));
+      if (car) {
+        car.fuelFee = Math.max(0, Number(input.value || 0));
+        dirtyTravelFeeBoundaries.add(currentBoundary().id);
+      }
     }),
   );
   document.querySelectorAll("[data-worker-id]").forEach((chip) => {
@@ -344,6 +353,7 @@ async function saveCars() {
   try {
     if (online) await api("save-cars", { boundaryId: currentBoundary().id, payload });
     else localStorage.setItem(localKeys.cars, JSON.stringify(carRows()));
+    dirtyTravelFeeBoundaries.delete(currentBoundary().id);
     setStatus("Az autóbeosztás mentve.");
     setTimeout(() => setStatus(""), 2200);
     renderCarsAdmin();
@@ -490,6 +500,86 @@ async function savePayroll(event, worker) {
     if (!online) localStorage.setItem(localKeys.payroll, JSON.stringify(payrollEntries));
     setStatus("A fizetési turnusadatok mentve.");
     renderPayrollAdmin();
+  } catch (error) {
+    setStatus(error.message, "error");
+  }
+}
+
+function renderCostSummaryAdmin() {
+  const summary = adminCostSummary(schedule, carRows(), payrollEntries, hourlyRate);
+  const drivers = summary.rows.filter((row) => row.trips.length);
+  const signedHours = (value) => `${value > 0 ? "+" : ""}${formatHours(value)}`;
+  const workspace = document.querySelector("#admin-workspace");
+  workspace.innerHTML = `<section class="card admin-content cost-admin-page">
+    <div class="cost-heading"><div><p class="eyebrow">Admin pénzügyi áttekintés</p><h1>Költségösszesítő</h1><p class="lead">Személyenkénti munkadíj és utazási díj. Az utazási díj minden útnál kizárólag a kijelölt sofőrhöz adódik hozzá.</p></div><button id="save-travel-fees" class="button" type="button">Utazási díjak mentése</button></div>
+    <div class="stats cost-summary-stats">
+      <div class="stat"><b>${formatMoney(summary.wages)}</b><span>összes munkadíj</span></div>
+      <div class="stat"><b>${formatMoney(summary.travelFees)}</b><span>összes utazási díj</span></div>
+      <div class="stat"><b>${formatMoney(summary.total)}</b><span>teljes fizetendő költség</span></div>
+      <div class="stat"><b>${formatHours(summary.paidHours)}</b><span>összes elszámolt munka</span></div>
+      <div class="stat ${summary.missingTravelFees ? "stat-warning" : ""}"><b>${summary.missingTravelFees}</b><span>díj nélküli sofőrös út</span></div>
+    </div>
+    ${summary.missingTravelFees ? `<p class="notice">${summary.missingTravelFees} sofőrös útnál még 0 Ft az utazási díj. Ezeket lent sárga jelölés mutatja.</p>` : ""}
+    <div class="table-card cost-table-wrap"><table class="payroll-table cost-table">
+      <thead><tr><th>Dolgozó</th><th>Tervezett</th><th>Eltérés</th><th>Elszámolt</th><th>Munkadíj</th><th>Utazási díj</th><th>Fizetendő</th><th></th></tr></thead>
+      <tbody>${summary.rows.map((row) => `<tr><td><b>${escapeHtml(row.worker.name)}</b></td><td>${formatHours(row.scheduledHours)}</td><td>${signedHours(row.adjustmentHours)}</td><td>${formatHours(row.paidHours)}</td><td>${formatMoney(row.wages)}</td><td>${formatMoney(row.travelFees)}${row.trips.length ? `<br /><small>${row.trips.length} sofőrös út${row.missingTravelFees ? ` · ${row.missingTravelFees} díj nélkül` : ""}</small>` : ""}</td><td><b>${formatMoney(row.total)}</b></td><td><button class="button button-secondary cost-edit-button" type="button" data-cost-worker="${escapeHtml(row.worker.id)}">Fizetés szerkesztése</button></td></tr>`).join("")}</tbody>
+      <tfoot><tr><td>Összesen</td><td>${formatHours(summary.scheduledHours)}</td><td>${signedHours(summary.adjustmentHours)}</td><td>${formatHours(summary.paidHours)}</td><td>${formatMoney(summary.wages)}</td><td>${formatMoney(summary.travelFees)}</td><td>${formatMoney(summary.total)}</td><td></td></tr></tfoot>
+    </table></div>
+    <div class="cost-trip-section">
+      <div><h2>Utazási díjak utanként</h2><p class="lead">A díj itt és az Autóbeosztások fülön is ugyanazt az adatot módosítja.</p></div>
+      ${drivers.length ? `<div class="cost-driver-list">${drivers.map((row) => `<details class="cost-driver-card" ${row.missingTravelFees ? "open" : ""}><summary><span><b>${escapeHtml(row.worker.name)}</b><small>${row.trips.length} sofőrös út</small></span><strong>${formatMoney(row.travelFees)}</strong></summary><div class="cost-trip-list">${row.trips.map((trip) => `<div class="cost-trip-row ${trip.amount <= 0 ? "missing-fee" : ""}"><div><b>${escapeHtml(trip.boundaryLabel)} · ${trip.direction === "arrivals" ? "Érkezés" : "Távozás"}</b><small>Autó ${trip.carIndex + 1}${trip.amount <= 0 ? " · díj megadása szükséges" : ""}</small></div><label class="field"><span>Utazási díj (Ft)</span><input type="number" min="0" step="100" value="${trip.amount}" data-travel-fee-boundary="${escapeHtml(trip.boundaryId)}" data-travel-fee-direction="${trip.direction}" data-travel-fee-index="${trip.carIndex}" aria-label="${escapeHtml(row.worker.name)} utazási díja, ${escapeHtml(trip.boundaryLabel)}" /></label><button class="button button-secondary" type="button" data-cost-car-boundary="${escapeHtml(trip.boundaryId)}" data-cost-car-direction="${trip.direction}">Autó megnyitása</button></div>`).join("")}</div></details>`).join("")}</div>` : '<p class="notice">Még nincs sofőr kijelölve egyetlen úthoz sem.</p>'}
+    </div>
+  </section>`;
+  bindCostSummaryAdmin();
+}
+
+function bindCostSummaryAdmin() {
+  document.querySelectorAll("[data-cost-worker]").forEach((button) =>
+    button.addEventListener("click", () => {
+      selectedPayrollWorkerId = button.dataset.costWorker;
+      activeTab = "payroll";
+      location.hash = "payroll";
+      renderAdmin();
+    }),
+  );
+  document.querySelectorAll("[data-cost-car-boundary]").forEach((button) =>
+    button.addEventListener("click", () => {
+      activeBoundaryId = button.dataset.costCarBoundary;
+      activeDirection = button.dataset.costCarDirection;
+      activeTab = "cars";
+      location.hash = "";
+      renderAdmin();
+    }),
+  );
+  document.querySelectorAll("[data-travel-fee-boundary]").forEach((input) =>
+    input.addEventListener("input", () => {
+      const payload = carsByBoundary.get(input.dataset.travelFeeBoundary);
+      const car = payload?.[input.dataset.travelFeeDirection]?.cars?.[Number(input.dataset.travelFeeIndex)];
+      if (!car) return;
+      const amount = Number(input.value || 0);
+      car.fuelFee = Number.isFinite(amount) ? Math.max(0, amount) : 0;
+      dirtyTravelFeeBoundaries.add(input.dataset.travelFeeBoundary);
+    }),
+  );
+  document.querySelector("#save-travel-fees").addEventListener("click", saveTravelFees);
+}
+
+async function saveTravelFees() {
+  if (!dirtyTravelFeeBoundaries.size) {
+    setStatus("Nincs mentetlen utazási díj.");
+    return;
+  }
+  try {
+    if (online) {
+      for (const boundaryId of dirtyTravelFeeBoundaries) {
+        await api("save-cars", { boundaryId, payload: clone(carsByBoundary.get(boundaryId) || blankPayload()) });
+      }
+    } else {
+      localStorage.setItem(localKeys.cars, JSON.stringify(carRows()));
+    }
+    dirtyTravelFeeBoundaries.clear();
+    setStatus("Az utazási díjak mentve.");
+    renderCostSummaryAdmin();
   } catch (error) {
     setStatus(error.message, "error");
   }

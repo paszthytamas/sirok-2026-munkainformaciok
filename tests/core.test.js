@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  adminCostSummary,
   carDriversPresentAtDeparture,
   movementCompatibility,
   normalizeCarRows,
@@ -62,6 +63,7 @@ test("workerRideTimeline combines arrival, departure, companions and driver role
       assigned: true,
       role: "driver",
       driverId: "anna",
+      memberIds: ["anna", "bela"],
       companionIds: ["bela"],
     },
     {
@@ -71,9 +73,57 @@ test("workerRideTimeline combines arrival, departure, companions and driver role
       assigned: true,
       role: "passenger",
       driverId: "bela",
+      memberIds: ["bela", "anna"],
       companionIds: ["bela"],
     },
   ]);
+});
+
+test("adminCostSummary combines wages and per-trip driver fees", () => {
+  const schedule = {
+    shifts: [
+      { id: "s1", durationHours: 4 },
+      { id: "s2", durationHours: 6 },
+    ],
+    workers: [
+      { id: "anna", name: "Anna", assignments: { s1: true, s2: true } },
+      { id: "bela", name: "Béla", assignments: { s1: true, s2: false } },
+    ],
+    boundaries: [
+      { id: "one", label: "Sze 10:00", currentShiftId: "s1", previousShiftId: null },
+      { id: "two", label: "Sze 14:00", currentShiftId: "s2", previousShiftId: "s1" },
+    ],
+  };
+  const cars = [
+    {
+      boundary_id: "one",
+      payload: { arrivals: { cars: [{ id: "a", driver: "anna", fuelFee: 1200 }] } },
+    },
+    {
+      boundary_id: "two",
+      payload: {
+        arrivals: { cars: [{ id: "b", driver: "anna", fuelFee: 0 }] },
+        departures: { cars: [{ id: "c", driver: "bela", fuelFee: 800 }] },
+      },
+    },
+  ];
+  const payroll = [
+    { worker_id: "anna", shift_id: "s1", adjustment_hours: 1 },
+    { worker_id: "bela", shift_id: "s1", adjustment_hours: -0.5 },
+  ];
+
+  const result = adminCostSummary(schedule, cars, payroll, 2000);
+  assert.equal(result.rows[0].worker.id, "anna");
+  assert.equal(result.rows[0].paidHours, 11);
+  assert.equal(result.rows[0].travelFees, 1200);
+  assert.equal(result.rows[0].total, 23200);
+  assert.equal(result.rows[0].missingTravelFees, 1);
+  assert.equal(result.rows[1].total, 7800);
+  assert.equal(result.wages, 29000);
+  assert.equal(result.travelFees, 2000);
+  assert.equal(result.total, 31000);
+  assert.equal(result.tripCount, 3);
+  assert.equal(result.missingTravelFees, 1);
 });
 
 test("normalizeCarRows keeps every boundary", () => {
