@@ -7,7 +7,7 @@ import {
   payrollSummary,
   suggestCarGroups,
   sortedWorkerIds,
-  workerDriverShiftIds,
+  workerArrivalDriverShiftIds,
   workerRideTimeline,
 } from "./core.js";
 
@@ -188,7 +188,7 @@ function renderWorkerOverview() {
   }
   const contact = contactsByWorkerId.get(worker.id);
   const rides = workerRideTimeline(schedule, carRows, worker.id);
-  const driverShiftIds = workerDriverShiftIds(schedule, carRows, worker.id);
+  const arrivalDriverShiftIds = workerArrivalDriverShiftIds(schedule, carRows, worker.id);
   const callAction = contact?.phone_e164
     ? `<a class="button call-button" href="tel:${escapeHtml(contact.phone_e164)}">☎ ${escapeHtml(contact.phone_display || contact.phone_e164)}</a>`
     : `<a class="button button-secondary" href="#kontaktok?worker=${encodeURIComponent(worker.id)}">Kontaktlista megnyitása</a>`;
@@ -209,7 +209,7 @@ function renderWorkerOverview() {
     <div class="stat"><b>${worker.blocks.length}</b><span>egybefüggő munkablokk</span></div>
     <div class="stat"><b>${rides.filter((ride) => ride.role === "driver").length}</b><span>sofőrként beosztott út</span></div>
   </div>
-  ${renderWorkerShiftTimeline(worker, driverShiftIds)}
+  ${renderWorkerShiftTimeline(worker, arrivalDriverShiftIds)}
   <div class="worker-overview-grid">
     <section class="card overview-panel">
       <h2>Egybefüggő munkaidők</h2>
@@ -234,7 +234,7 @@ function renderWorkerOverview() {
   });
 }
 
-function renderWorkerShiftTimeline(worker, driverShiftIds) {
+function renderWorkerShiftTimeline(worker, arrivalDriverShiftIds) {
   const dayNames = { Sze: "Szerda", Cs: "Csütörtök", P: "Péntek", Szo: "Szombat" };
   const dayGroups = [];
   for (const shift of schedule.shifts) {
@@ -244,14 +244,13 @@ function renderWorkerShiftTimeline(worker, driverShiftIds) {
   }
 
   return `<section class="card worker-timeline-panel">
-    <div class="worker-timeline-heading"><div><p class="eyebrow">Szekvenciális áttekintés</p><h2>Heti jelenléti idővonal</h2><p class="lead">A munkanap reggel 08:00-kor vált; a hajnali 03:00-s turnus még az előző munkanaphoz tartozik.</p></div><div class="timeline-legend" aria-label="Jelmagyarázat"><span><i class="legend-swatch legend-working"></i> dolgozik</span><span><b aria-hidden="true">🚗</b> sofőr</span><span><i class="legend-swatch legend-off"></i> nincs beosztva</span></div></div>
+    <div class="worker-timeline-heading"><div><p class="eyebrow">Szekvenciális áttekintés</p><h2>Heti jelenléti idővonal</h2><p class="lead">A munkanap reggel 08:00-kor vált; a hajnali 03:00-s turnus még az előző munkanaphoz tartozik. Egybefüggő munka esetén az autó csak az első turnusnál jelenik meg: azt jelzi, hogy a dolgozó arra az érkezésre sofőrként van beosztva.</p></div><div class="timeline-legend" aria-label="Jelmagyarázat"><span><i class="legend-swatch legend-working"></i> ✓ dolgozik</span><span><b aria-hidden="true">✓ 🚗</b> sofőrként érkezik</span><span><i class="legend-swatch legend-off"></i> nincs beosztva</span></div></div>
     <div class="worker-shift-timeline">${dayGroups.map((group) => `<section class="timeline-day"><h3>${escapeHtml(dayNames[group.day] || group.day)}</h3><div class="timeline-day-slots" style="--shift-count:${group.shifts.length}">${group.shifts.map((shift) => {
       const works = Boolean(worker.assignments[shift.id]);
-      const drives = driverShiftIds.has(shift.id);
+      const drives = works && arrivalDriverShiftIds.has(shift.id);
       const stateClass = drives ? "is-working is-driver" : works ? "is-working" : "is-off";
-      const statusIcon = drives ? "🚗" : works ? "✓" : "–";
-      const statusLabel = drives ? "dolgozik és sofőr" : works ? "dolgozik" : "nincs beosztva";
-      return `<div class="timeline-slot ${stateClass}" title="${escapeHtml(`${dayNames[group.day] || group.day} ${shift.start}–${shift.end}: ${statusLabel}`)}"><time datetime="${escapeHtml(shift.start)}">${escapeHtml(shift.start)}</time><span class="timeline-state" aria-label="${escapeHtml(statusLabel)}">${statusIcon}</span></div>`;
+      const statusLabel = drives ? "dolgozik, és erre a munkablokkra sofőrként érkezik" : works ? "dolgozik" : "nincs beosztva";
+      return `<div class="timeline-slot ${stateClass}" title="${escapeHtml(`${dayNames[group.day] || group.day} ${shift.start}–${shift.end}: ${statusLabel}`)}"><time datetime="${escapeHtml(shift.start)}">${escapeHtml(shift.start)}</time><span class="timeline-state" aria-label="${escapeHtml(statusLabel)}"><span class="timeline-check" aria-hidden="true">${works ? "✓" : "–"}</span><span class="timeline-car" aria-hidden="true">${drives ? "🚗" : ""}</span></span></div>`;
     }).join("")}</div></section>`).join("")}</div>
   </section>`;
 }

@@ -200,9 +200,10 @@ h1 { margin-bottom: .35rem; font-size: clamp(1.65rem, 4vw, 2.5rem); letter-spaci
 .timeline-day-slots { display: grid; grid-template-columns: repeat(var(--shift-count),minmax(0,1fr)); gap: .35rem; min-width: 0; }
 .timeline-slot { display: grid; min-width: 0; gap: .3rem; text-align: center; }
 .timeline-slot time { overflow: hidden; color: var(--muted); font-size: clamp(.62rem,2.5vw,.76rem); font-weight: 750; text-overflow: clip; white-space: nowrap; }
-.timeline-state { display: grid; place-items: center; min-width: 0; min-height: clamp(42px,12vw,58px); border: 1px solid var(--line); border-radius: 10px; color: #8a9890; background: #edf1ef; font-size: clamp(.9rem,4vw,1.2rem); font-weight: 900; }
+.timeline-state { display: grid; grid-template-rows: minmax(0,1fr) 1rem; place-items: center; min-width: 0; min-height: clamp(48px,13vw,62px); border: 1px solid var(--line); border-radius: 10px; color: #8a9890; background: #edf1ef; font-weight: 900; }
+.timeline-check { grid-row: 1; align-self: center; font-size: clamp(.9rem,4vw,1.2rem); line-height: 1; }
+.timeline-car { grid-row: 2; min-height: 1rem; font-size: clamp(.68rem,2.8vw,.86rem); line-height: 1; }
 .timeline-slot.is-working .timeline-state { color: #0a5a32; border-color: #8bc3a1; background: #ccefd9; }
-.timeline-slot.is-driver .timeline-state { color: white; border-color: var(--green-700); background: var(--green-700); }
 
 .boundary-list { display: grid; gap: .85rem; }
 .algorithm-note { margin-bottom: 1rem; padding: 1rem; border-left: 5px solid var(--green-700); }

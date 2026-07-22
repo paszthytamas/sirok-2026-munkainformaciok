@@ -8,7 +8,7 @@ import {
   normalizeCarRows,
   payrollSummary,
   suggestCarGroups,
-  workerDriverShiftIds,
+  workerArrivalDriverShiftIds,
   workerRideTimeline,
 } from "../site/assets/core.js";
 
@@ -80,7 +80,7 @@ test("workerRideTimeline combines arrival, departure, companions and driver role
   ]);
 });
 
-test("workerDriverShiftIds maps arrival and departure driving to the related shift", () => {
+test("workerArrivalDriverShiftIds marks only shifts where the worker arrives as driver", () => {
   const schedule = {
     boundaries: [
       { id: "one", currentShiftId: "s1", previousShiftId: null },
@@ -95,14 +95,14 @@ test("workerDriverShiftIds maps arrival and departure driving to the related shi
     {
       boundary_id: "two",
       payload: {
-        arrivals: { cars: [{ driver: "anna", shiftId: "s2" }] },
-        departures: { cars: [{ driver: "anna" }] },
+        arrivals: { cars: [{ driver: "bela", shiftId: "s2" }] },
+        departures: { cars: [{ driver: "anna", shiftId: "s2" }] },
       },
     },
   ];
 
-  assert.deepEqual([...workerDriverShiftIds(schedule, rows, "anna")], ["s1", "s2"]);
-  assert.deepEqual([...workerDriverShiftIds(schedule, rows, "bela")], []);
+  assert.deepEqual([...workerArrivalDriverShiftIds(schedule, rows, "anna")], ["s1"]);
+  assert.deepEqual([...workerArrivalDriverShiftIds(schedule, rows, "bela")], ["s2"]);
 });
 
 test("adminCostSummary combines wages and per-trip driver fees", () => {

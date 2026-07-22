@@ -8,7 +8,7 @@ Részletes admin- és backendtelepítés: [`SUPABASE_SETUP.md`](SUPABASE_SETUP.m
 
 1. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
 2. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető külön kiemelt blokkban látható.
-3. **Dolgozói adatlap:** névválasztó kezdőoldal után egyetlen dolgozó összes turnusa, napokra bontott jelenléti idővonala, folyamatos munkablokkja, érkezése és távozása; minden útnál látszik a sofőr/utas státusz és a teljes autó névsora, első helyen az autóval jelölt sofőrrel.
+3. **Dolgozói adatlap:** névválasztó kezdőoldal után egyetlen dolgozó összes turnusa, napokra bontott jelenléti idővonala, folyamatos munkablokkja, érkezése és távozása; az idővonalon az autó csak az egybefüggő munkablokk első turnusánál jelzi a sofőrként történő érkezést. Minden útnál látszik a sofőr/utas státusz és a teljes autó névsora, első helyen az autóval jelölt sofőrrel.
 4. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám. A nézet megmaradt, de nincs a főmenüben; közvetlenül a `#szemelyek` útvonalon érhető el.
 5. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
 6. **Utazási javaslat:** automatikusan optimalizált autócsoportok minden érkezési és távozási időpontra. A nézet megmaradt, de nincs a főmenüben; közvetlenül a `#utazasi-javaslat` útvonalon érhető el.
