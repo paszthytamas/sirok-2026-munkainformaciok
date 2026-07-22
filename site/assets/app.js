@@ -278,7 +278,7 @@ function renderWorkerShiftTimeline(worker, arrivalDriverShiftIds) {
       const drives = works && arrivalDriverShiftIds.has(shift.id);
       const stateClass = drives ? "is-working is-driver" : works ? "is-working" : "is-off";
       const statusLabel = drives ? "dolgozik, és erre a munkablokkra sofőrként érkezik" : works ? "dolgozik" : "nincs beosztva";
-      return `<div class="timeline-slot ${stateClass}" title="${escapeHtml(`${dayNames[group.day] || group.day} ${shift.start}–${shift.end}: ${statusLabel}`)}"><time datetime="${escapeHtml(shift.start)}">${escapeHtml(shift.start)}</time><span class="timeline-state" aria-label="${escapeHtml(statusLabel)}"><span class="timeline-check" aria-hidden="true">${works ? "✓" : "–"}</span><span class="timeline-car" aria-hidden="true">${drives ? "🚗" : ""}</span></span></div>`;
+      return `<div class="timeline-slot ${stateClass}" title="${escapeHtml(`${dayNames[group.day] || group.day} ${shift.start}–${shift.end}: ${statusLabel}`)}"><time datetime="${escapeHtml(shift.start)}">${escapeHtml(shift.start)} - ${escapeHtml(shift.end)}</time><span class="timeline-state" aria-label="${escapeHtml(statusLabel)}"><span class="timeline-check" aria-hidden="true">${works ? "✓" : "–"}</span><span class="timeline-car" aria-hidden="true">${drives ? "🚗" : ""}</span></span></div>`;
     }).join("")}</div></section>`).join("")}</div>
   </section>`;
 }
