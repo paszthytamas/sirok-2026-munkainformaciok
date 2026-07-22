@@ -86,7 +86,7 @@ function pageHeading(eyebrow, title, description, tools = "") {
 
 function routeName() {
   const candidate = location.hash.replace(/^#/, "").split("?")[0];
-  return routes.has(candidate) ? candidate : "heti";
+  return routes.has(candidate) ? candidate : "informaciok";
 }
 
 function activateNavigation(route) {
@@ -557,7 +557,7 @@ function contactCards(contacts, requestedId) {
 
 async function renderInformation() {
   view.innerHTML = `${pageHeading(
-    "5. nézet",
+    "Kezdőlap",
     "Általános munkainformációk",
     "A repository data/munkainformaciok.md fájljának közzétett tartalma.",
   )}<article id="markdown-content" class="card markdown-card"><p>Betöltés…</p></article>`;
