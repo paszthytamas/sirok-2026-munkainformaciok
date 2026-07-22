@@ -13,6 +13,7 @@ import {
   summarizeWeatherShift,
   workerArrivalDriverShiftIds,
   workerRideTimeline,
+  workBlockDateTimeRange,
 } from "../site/assets/core.js";
 
 test("driverRoundTripCount treats arrival and departure as one assignment", () => {
@@ -232,6 +233,21 @@ test("shiftDateTimeRange follows the 08:00 operational day boundary", () => {
     shiftDateTimeRange("2026-07-25", { start: "03:00", end: "10:00" }),
     { start: "2026-07-26T03:00", end: "2026-07-26T10:00" },
   );
+});
+
+test("workBlockDateTimeRange spans every shift in a continuous work block", () => {
+  const shifts = [
+    { id: "cs-evening", day: "Cs", start: "18:00", end: "03:00" },
+    { id: "cs-dawn", day: "Cs", start: "03:00", end: "08:00" },
+    { id: "p-morning", day: "P", start: "08:00", end: "12:00" },
+  ];
+  const block = { shiftIds: ["cs-evening", "cs-dawn", "p-morning"] };
+  const operationalDates = { Cs: "2026-07-23", P: "2026-07-24" };
+
+  assert.deepEqual(workBlockDateTimeRange(block, shifts, operationalDates), {
+    start: "2026-07-23T18:00",
+    end: "2026-07-24T12:00",
+  });
 });
 
 test("summarizeWeatherShift aggregates only hours inside the shift", () => {

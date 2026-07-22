@@ -360,6 +360,27 @@ export function shiftDateTimeRange(operationalDate, shift, workdayStartHour = 8)
   };
 }
 
+/** Egy összefüggő munkablokk első kezdetétől az utolsó turnus végéig tartó naptári időablak. */
+export function workBlockDateTimeRange(block, shifts, operationalDates, workdayStartHour = 8) {
+  const shiftsById = new Map((shifts || []).map((shift) => [shift.id, shift]));
+  const shiftIds = block?.shiftIds || [];
+  const firstShift = shiftsById.get(shiftIds[0] || block?.startShiftId);
+  const lastShift = shiftsById.get(shiftIds.at(-1) || block?.endShiftId);
+  if (!firstShift || !lastShift) return null;
+
+  const dateForDay = (day) => operationalDates instanceof Map
+    ? operationalDates.get(day)
+    : operationalDates?.[day];
+  const firstDate = dateForDay(firstShift.day);
+  const lastDate = dateForDay(lastShift.day);
+  if (!firstDate || !lastDate) return null;
+
+  return {
+    start: shiftDateTimeRange(firstDate, firstShift, workdayStartHour).start,
+    end: shiftDateTimeRange(lastDate, lastShift, workdayStartHour).end,
+  };
+}
+
 function weatherSeverity(code) {
   const numericCode = Number(code);
   if ([95, 96, 99].includes(numericCode)) return 9;

@@ -12,6 +12,7 @@ import {
   summarizeWeatherShift,
   workerArrivalDriverShiftIds,
   workerRideTimeline,
+  workBlockDateTimeRange,
 } from "./core.js";
 
 const view = document.querySelector("#view");
@@ -41,6 +42,7 @@ let leadersByShift = new Map();
 const attendanceStorageKey = "sirok-attendance-session-v1";
 let contactsByWorkerId = new Map();
 let weatherCache;
+let weatherRequest;
 
 const weatherDays = [
   { day: "Sze", date: "2026-07-22", name: "Szerda" },
@@ -48,6 +50,7 @@ const weatherDays = [
   { day: "P", date: "2026-07-24", name: "Péntek" },
   { day: "Szo", date: "2026-07-25", name: "Szombat" },
 ];
+const weatherDatesByDay = Object.fromEntries(weatherDays.map((item) => [item.day, item.date]));
 const weatherCoordinates = { latitude: 47.9319682, longitude: 20.194483 };
 const weatherCacheLifetime = 10 * 60 * 1000;
 
@@ -242,11 +245,21 @@ function renderWorkerOverview() {
       <h2>Érkezések és távozások</h2>
       <div class="worker-ride-timeline">${rides.map(renderWorkerRide).join("") || '<p class="empty">Nincs érkezési vagy távozási esemény.</p>'}</div>
     </section>
-  </div>`;
+  </div>
+  <section class="card worker-weather-panel">
+    <div class="worker-weather-heading">
+      <div><p class="eyebrow">Személyes előrejelzés</p><h2>Munkablokkjaim időjárása</h2><p class="lead">Az egyhuzamban ledolgozott időszakokra összesítve.</p></div>
+      <div class="worker-weather-links"><a href="#idojaras">Teljes időjárás →</a><small>Adatforrás: <a href="https://open-meteo.com/" target="_blank" rel="noopener noreferrer">Open-Meteo</a></small></div>
+    </div>
+    <div id="worker-weather-content" class="worker-weather-content" data-worker-id="${escapeHtml(worker.id)}" aria-live="polite">
+      <div class="worker-weather-loading"><span class="weather-loader" aria-hidden="true"></span><span>Időjárás betöltése…</span></div>
+    </div>
+  </section>`;
 
   document.querySelector("#overview-worker").addEventListener("change", (event) => {
     location.hash = `dolgozo?worker=${encodeURIComponent(event.target.value)}`;
   });
+  void renderWorkerBlockWeather(worker);
 }
 
 function renderWorkerShiftTimeline(worker, arrivalDriverShiftIds) {
@@ -604,6 +617,45 @@ function weatherNumber(value, digits = 0) {
   }).format(Number(value));
 }
 
+function workerWeatherValue(value, suffix) {
+  if (value === null || value === undefined) return "–";
+  return `${weatherNumber(Math.round(value))}${suffix}`;
+}
+
+function renderWorkerWeatherBlock(block, index, hourly) {
+  const range = workBlockDateTimeRange(block, schedule.shifts, weatherDatesByDay);
+  const summary = range ? summarizeWeatherShift(hourly, range.start, range.end) : null;
+  return `<article class="worker-weather-block${summary ? "" : " is-unavailable"}">
+    <div class="worker-weather-block-head">
+      <span>${index + 1}. munkablokk</span>
+      <strong>${escapeHtml(block.startLabel)} → ${escapeHtml(block.endLabel)}</strong>
+    </div>
+    <dl class="worker-weather-metrics">
+      <div class="weather-min"><dt>Min. hőmérséklet</dt><dd>${workerWeatherValue(summary?.minTemperature, " °C")}</dd></div>
+      <div class="weather-max"><dt>Max. hőmérséklet</dt><dd>${workerWeatherValue(summary?.maxTemperature, " °C")}</dd></div>
+      <div class="weather-rain"><dt>Csapadék valószínűsége</dt><dd>${workerWeatherValue(summary?.maxPrecipitationProbability, "%")}</dd><small>munkablokk alatti maximum</small></div>
+    </dl>
+    ${summary ? "" : '<p class="worker-weather-no-data">Erre az időszakra nincs elérhető előrejelzés.</p>'}
+  </article>`;
+}
+
+async function renderWorkerBlockWeather(worker) {
+  try {
+    const forecast = await loadWeatherForecast();
+    if (routeName() !== "dolgozo") return;
+    const content = document.querySelector("#worker-weather-content");
+    if (!content || content.dataset.workerId !== worker.id) return;
+    content.innerHTML = `<div class="worker-weather-grid">${worker.blocks
+      .map((block, index) => renderWorkerWeatherBlock(block, index, forecast.payload.hourly))
+      .join("")}</div>`;
+  } catch (error) {
+    if (routeName() !== "dolgozo") return;
+    const content = document.querySelector("#worker-weather-content");
+    if (!content || content.dataset.workerId !== worker.id) return;
+    content.innerHTML = `<p class="notice error">A munkablokkok időjárása most nem tölthető be. ${escapeHtml(error.message)}</p>`;
+  }
+}
+
 function weatherTemperatureRange(summary, apparent = false) {
   const minimum = apparent ? summary.minApparentTemperature : summary.minTemperature;
   const maximum = apparent ? summary.maxApparentTemperature : summary.maxTemperature;
@@ -749,6 +801,22 @@ async function fetchWeatherForecast() {
   return payload;
 }
 
+async function loadWeatherForecast(forceRefresh = false) {
+  const cacheIsFresh = weatherCache && Date.now() - weatherCache.fetchedAt < weatherCacheLifetime;
+  if (!forceRefresh && cacheIsFresh) return weatherCache;
+  if (!forceRefresh && weatherRequest) return weatherRequest;
+  const request = fetchWeatherForecast().then((payload) => {
+    weatherCache = { payload, fetchedAt: Date.now() };
+    return weatherCache;
+  });
+  weatherRequest = request;
+  try {
+    return await request;
+  } finally {
+    if (weatherRequest === request) weatherRequest = undefined;
+  }
+}
+
 async function renderWeather(forceRefresh = false) {
   view.innerHTML = `${pageHeading(
     "Sirok · 2026. július 22–25.",
@@ -768,12 +836,9 @@ async function renderWeather(forceRefresh = false) {
   refreshButton.disabled = true;
 
   try {
-    const cacheIsFresh = weatherCache && Date.now() - weatherCache.fetchedAt < weatherCacheLifetime;
-    if (forceRefresh || !cacheIsFresh) {
-      weatherCache = { payload: await fetchWeatherForecast(), fetchedAt: Date.now() };
-    }
+    const forecast = await loadWeatherForecast(forceRefresh);
     if (routeName() !== "idojaras") return;
-    renderWeatherForecast(weatherCache.payload, weatherCache.fetchedAt);
+    renderWeatherForecast(forecast.payload, forecast.fetchedAt);
     refreshButton.disabled = false;
   } catch (error) {
     if (routeName() !== "idojaras") return;
