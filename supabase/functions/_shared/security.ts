@@ -103,7 +103,7 @@ type WorkerCredential = {
 };
 
 export async function authenticateWorkerPassword(password: string): Promise<string | null> {
-  if (password.length < 12 || password.length > 128) return null;
+  if (password.length < 4 || password.length > 128) return null;
   const lookup = await passwordLookup(password);
   const credentials = await serviceJson(
     `/rest/v1/worker_credentials?password_lookup=eq.${encodeURIComponent(lookup)}&select=worker_id,password_salt,password_hash,password_iterations&limit=1`,

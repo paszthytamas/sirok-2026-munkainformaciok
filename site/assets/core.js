@@ -96,6 +96,27 @@ export function workerRideTimeline(schedule, rows, workerId) {
   return timeline;
 }
 
+export function workerDriverShiftIds(schedule, rows, workerId) {
+  const rowsByBoundary = new Map(
+    (Array.isArray(rows) ? rows : []).map((row) => [row.boundary_id, row.payload || {}]),
+  );
+  const shiftIds = new Set();
+
+  for (const boundary of schedule.boundaries || []) {
+    const payload = rowsByBoundary.get(boundary.id) || {};
+    for (const direction of ["arrivals", "departures"]) {
+      for (const car of payload[direction]?.cars || []) {
+        if (car?.driver !== workerId) continue;
+        const shiftId = car.shiftId
+          || (direction === "arrivals" ? boundary.currentShiftId : boundary.previousShiftId);
+        if (shiftId) shiftIds.add(shiftId);
+      }
+    }
+  }
+
+  return shiftIds;
+}
+
 export function adminCostSummary(schedule, carRows, payrollEntries, hourlyRate) {
   const rate = Math.max(0, Number(hourlyRate) || 0);
   const adjustments = new Map(

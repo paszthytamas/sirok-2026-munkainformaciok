@@ -7,6 +7,7 @@ import {
   payrollSummary,
   suggestCarGroups,
   sortedWorkerIds,
+  workerDriverShiftIds,
   workerRideTimeline,
 } from "./core.js";
 
@@ -103,11 +104,9 @@ function renderWeekly() {
     "Az Excel contact táblájából, kizárólag a ténylegesen beosztott dolgozókkal.",
     '<input id="table-search" class="input search-field" type="search" placeholder="Keresés név szerint…" aria-label="Keresés név szerint" />',
   )}
-  <div class="stats">
+  <div class="stats weekly-stats">
     <div class="stat"><b>${schedule.statistics.workerCount}</b><span>beosztott dolgozó</span></div>
     <div class="stat"><b>${schedule.statistics.shiftCount}</b><span>turnus</span></div>
-    <div class="stat"><b>${formatHours(schedule.statistics.scheduledHours)}</b><span>összes beosztott munka</span></div>
-    <div class="stat"><b>Excel</b><span>egyetlen adatforrás</span></div>
   </div>
   <div class="card table-card">
     <div class="table-scroll">
@@ -160,16 +159,36 @@ function renderPeople() {
   });
 }
 
+function renderWorkerOverviewWelcome(workers) {
+  if (!workers.length) {
+    view.innerHTML = '<div class="notice">Nincs megjeleníthető dolgozó.</div>';
+    return;
+  }
+  view.innerHTML = `${pageHeading(
+    "Dolgozói összesítő",
+    "Dolgozói adatlap",
+    "Válassz egy dolgozót a teljes munkaidő-, turnus- és utazási összesítő megnyitásához.",
+  )}<section class="card worker-welcome">
+    <div class="worker-welcome-icon" aria-hidden="true">👤</div>
+    <div><h2>Kinek az adatlapját szeretnéd megnézni?</h2><p class="lead">A kiválasztás után egy helyen látható a heti idővonal, a munkaidő és az autóbeosztás.</p></div>
+    <label class="field worker-welcome-picker" for="welcome-worker"><span>Dolgozó kiválasztása</span><select id="welcome-worker"><option value="">Válassz a névsorból…</option>${workers.map((worker) => `<option value="${escapeHtml(worker.id)}">${escapeHtml(worker.name)}</option>`).join("")}</select></label>
+  </section>`;
+  document.querySelector("#welcome-worker").addEventListener("change", (event) => {
+    if (event.target.value) location.hash = `dolgozo?worker=${encodeURIComponent(event.target.value)}`;
+  });
+}
+
 function renderWorkerOverview() {
   const workers = byWorkerName(schedule.workers);
   const requestedId = hashParams().get("worker");
-  const worker = workersById.get(requestedId) || workers[0];
+  const worker = requestedId ? workersById.get(requestedId) : null;
   if (!worker) {
-    view.innerHTML = '<div class="notice">Nincs megjeleníthető dolgozó.</div>';
+    renderWorkerOverviewWelcome(workers);
     return;
   }
   const contact = contactsByWorkerId.get(worker.id);
   const rides = workerRideTimeline(schedule, carRows, worker.id);
+  const driverShiftIds = workerDriverShiftIds(schedule, carRows, worker.id);
   const callAction = contact?.phone_e164
     ? `<a class="button call-button" href="tel:${escapeHtml(contact.phone_e164)}">☎ ${escapeHtml(contact.phone_display || contact.phone_e164)}</a>`
     : `<a class="button button-secondary" href="#kontaktok?worker=${encodeURIComponent(worker.id)}">Kontaktlista megnyitása</a>`;
@@ -190,6 +209,7 @@ function renderWorkerOverview() {
     <div class="stat"><b>${worker.blocks.length}</b><span>egybefüggő munkablokk</span></div>
     <div class="stat"><b>${rides.filter((ride) => ride.role === "driver").length}</b><span>sofőrként beosztott út</span></div>
   </div>
+  ${renderWorkerShiftTimeline(worker, driverShiftIds)}
   <div class="worker-overview-grid">
     <section class="card overview-panel">
       <h2>Egybefüggő munkaidők</h2>
@@ -212,6 +232,28 @@ function renderWorkerOverview() {
   document.querySelector("#overview-worker").addEventListener("change", (event) => {
     location.hash = `dolgozo?worker=${encodeURIComponent(event.target.value)}`;
   });
+}
+
+function renderWorkerShiftTimeline(worker, driverShiftIds) {
+  const dayNames = { Sze: "Szerda", Cs: "Csütörtök", P: "Péntek", Szo: "Szombat" };
+  const dayGroups = [];
+  for (const shift of schedule.shifts) {
+    const current = dayGroups.at(-1);
+    if (!current || current.day !== shift.day) dayGroups.push({ day: shift.day, shifts: [shift] });
+    else current.shifts.push(shift);
+  }
+
+  return `<section class="card worker-timeline-panel">
+    <div class="worker-timeline-heading"><div><p class="eyebrow">Szekvenciális áttekintés</p><h2>Heti jelenléti idővonal</h2><p class="lead">A munkanap reggel 08:00-kor vált; a hajnali 03:00-s turnus még az előző munkanaphoz tartozik.</p></div><div class="timeline-legend" aria-label="Jelmagyarázat"><span><i class="legend-swatch legend-working"></i> dolgozik</span><span><b aria-hidden="true">🚗</b> sofőr</span><span><i class="legend-swatch legend-off"></i> nincs beosztva</span></div></div>
+    <div class="worker-shift-timeline">${dayGroups.map((group) => `<section class="timeline-day"><h3>${escapeHtml(dayNames[group.day] || group.day)}</h3><div class="timeline-day-slots" style="--shift-count:${group.shifts.length}">${group.shifts.map((shift) => {
+      const works = Boolean(worker.assignments[shift.id]);
+      const drives = driverShiftIds.has(shift.id);
+      const stateClass = drives ? "is-working is-driver" : works ? "is-working" : "is-off";
+      const statusIcon = drives ? "🚗" : works ? "✓" : "–";
+      const statusLabel = drives ? "dolgozik és sofőr" : works ? "dolgozik" : "nincs beosztva";
+      return `<div class="timeline-slot ${stateClass}" title="${escapeHtml(`${dayNames[group.day] || group.day} ${shift.start}–${shift.end}: ${statusLabel}`)}"><time datetime="${escapeHtml(shift.start)}">${escapeHtml(shift.start)}</time><span class="timeline-state" aria-label="${escapeHtml(statusLabel)}">${statusIcon}</span></div>`;
+    }).join("")}</div></section>`).join("")}</div>
+  </section>`;
 }
 
 function renderWorkerRide(ride) {
@@ -534,7 +576,7 @@ function renderPayrollLogin() {
     <h2>Belépés jelszóval</h2>
     ${configured ? "" : '<p class="notice">A biztonságos fizetési háttér még nincs összekapcsolva az oldallal.</p>'}
     <form id="payroll-login-form">
-      <div class="field"><label for="worker-password">Személyes jelszó</label><input id="worker-password" type="password" minlength="12" autocomplete="current-password" required /></div>
+      <div class="field"><label for="worker-password">Személyes jelszó</label><input id="worker-password" type="password" minlength="4" autocomplete="current-password" required /></div>
       <button class="button" type="submit" ${configured ? "" : "disabled"}>Fizetési összesítő megnyitása</button>
       <div id="login-message" aria-live="polite"></div>
     </form>

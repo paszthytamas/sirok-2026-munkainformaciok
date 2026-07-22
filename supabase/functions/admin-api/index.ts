@@ -97,8 +97,8 @@ Deno.serve(async (request) => {
     if (action === "set-password") {
       const password = typeof body.password === "string" ? body.password : "";
       const name = typeof body.name === "string" ? body.name.trim() : "";
-      if (!validId(body.workerId) || !name || password.length < 12 || password.length > 128) {
-        return jsonResponse({ error: "A jelszó legalább 12 karakter legyen, a dolgozó adatai pedig legyenek érvényesek." }, 400);
+      if (!validId(body.workerId) || !name || password.length < 4 || password.length > 128) {
+        return jsonResponse({ error: "A jelszó legalább 4 karakter legyen, a dolgozó adatai pedig legyenek érvényesek." }, 400);
       }
       const [lookup, derived] = await Promise.all([passwordLookup(password), hashPassword(password)]);
       await upsert("/rest/v1/worker_credentials?on_conflict=worker_id", {

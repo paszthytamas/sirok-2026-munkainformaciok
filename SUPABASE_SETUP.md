@@ -133,7 +133,7 @@ A jelszó nem a Supabase Dashboardban olvasható lista, hanem az adminoldalon á
 1. nyisd meg az adminoldalt, és lépj be az admin e-mail-címeddel és adminjelszavaddal;
 2. nyisd meg a **Fizetések** fület, vagy közvetlenül az `/admin/#payroll` címet;
 3. a **Dolgozó** mezőben válaszd ki azt, akinek jelszót adsz;
-4. kattints az **Erős jelszó generálása** gombra, vagy írj be egy egyedi, legalább 12 karakteres jelszót;
+4. kattints a **Jelszó generálása** gombra, vagy írj be egy legalább 4 karakteres jelszót; speciális karakter nem kötelező, bármilyen karakter használható;
 5. a **Másolás** gombbal másold ki, és még mentés előtt add át biztonságos csatornán a dolgozónak;
 6. kattints a **Jelszó beállítása** gombra;
 7. a dolgozó a nyilvános oldal **Fizetésem** menüpontjában kizárólag ezt a jelszót írja be; külön felhasználónév nem szükséges.
