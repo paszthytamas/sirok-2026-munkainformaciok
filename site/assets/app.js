@@ -1,5 +1,6 @@
 import {
   byWorkerName,
+  driverRoundTripCount,
   escapeHtml,
   formatHours,
   formatMoney,
@@ -188,6 +189,7 @@ function renderWorkerOverview() {
   }
   const contact = contactsByWorkerId.get(worker.id);
   const rides = workerRideTimeline(schedule, carRows, worker.id);
+  const driverAssignments = driverRoundTripCount(rides);
   const arrivalDriverShiftIds = workerArrivalDriverShiftIds(schedule, carRows, worker.id);
   const callAction = contact?.phone_e164
     ? `<a class="button call-button" href="tel:${escapeHtml(contact.phone_e164)}">☎ ${escapeHtml(contact.phone_display || contact.phone_e164)}</a>`
@@ -207,7 +209,7 @@ function renderWorkerOverview() {
     <div class="stat"><b>${formatHours(worker.scheduledHours)}</b><span>tervezett munka</span></div>
     <div class="stat"><b>${worker.shiftIds.length}</b><span>turnus</span></div>
     <div class="stat"><b>${worker.blocks.length}</b><span>egybefüggő munkablokk</span></div>
-    <div class="stat"><b>${rides.filter((ride) => ride.role === "driver").length}</b><span>sofőrként beosztott út</span></div>
+    <div class="stat"><b>${new Intl.NumberFormat("hu-HU", { maximumFractionDigits: 1 }).format(driverAssignments)}</b><span>sofőri megbízás (oda-vissza)</span></div>
   </div>
   ${renderWorkerShiftTimeline(worker, arrivalDriverShiftIds)}
   <div class="worker-overview-grid">

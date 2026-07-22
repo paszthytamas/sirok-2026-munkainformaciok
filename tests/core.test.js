@@ -4,6 +4,7 @@ import test from "node:test";
 import {
   adminCostSummary,
   carDriversPresentAtDeparture,
+  driverRoundTripCount,
   movementCompatibility,
   normalizeCarRows,
   payrollSummary,
@@ -11,6 +12,17 @@ import {
   workerArrivalDriverShiftIds,
   workerRideTimeline,
 } from "../site/assets/core.js";
+
+test("driverRoundTripCount treats arrival and departure as one assignment", () => {
+  const rides = [
+    { assigned: true, role: "driver", direction: "arrivals" },
+    { assigned: true, role: "driver", direction: "departures" },
+    { assigned: true, role: "passenger", direction: "arrivals" },
+    { assigned: false, role: null, direction: "departures" },
+  ];
+  assert.equal(driverRoundTripCount(rides), 1);
+  assert.equal(driverRoundTripCount([...rides, { assigned: true, role: "driver" }]), 1.5);
+});
 
 test("carDriversPresentAtDeparture marks the next departure after a driver arrives", () => {
   const schedule = {

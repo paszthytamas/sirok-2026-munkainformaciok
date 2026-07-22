@@ -96,6 +96,13 @@ export function workerRideTimeline(schedule, rows, workerId) {
   return timeline;
 }
 
+export function driverRoundTripCount(rides) {
+  const driverLegs = (Array.isArray(rides) ? rides : []).filter(
+    (ride) => ride.assigned && ride.role === "driver",
+  ).length;
+  return driverLegs / 2;
+}
+
 export function workerArrivalDriverShiftIds(schedule, rows, workerId) {
   const rowsByBoundary = new Map(
     (Array.isArray(rows) ? rows : []).map((row) => [row.boundary_id, row.payload || {}]),
