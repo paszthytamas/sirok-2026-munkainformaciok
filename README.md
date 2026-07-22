@@ -6,14 +6,14 @@ Részletes admin- és backendtelepítés: [`SUPABASE_SETUP.md`](SUPABASE_SETUP.m
 
 ## Mit tartalmaz?
 
-1. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő kezdőlap.
-2. **Időjárás:** Open-Meteo előrejelzés Sirokra 2026. július 22–25. munkanapjaira, minden turnus tényleges naptári időablakára összesítve; hőmérséklettel, hőérzettel, csapadékeséllyel, széllel és lenyitható óránkénti bontással.
-3. **Dolgozói adatlap:** névválasztó kezdőoldal után egyetlen dolgozó összes turnusa, napokra bontott jelenléti idővonala, folyamatos munkablokkja, érkezése és távozása; az adatlap alján minden egybefüggő munkablokkhoz látható a minimum- és maximum-hőmérséklet, valamint a blokkon belüli legnagyobb csapadékvalószínűség. Az idővonalon az autó csak az egybefüggő munkablokk első turnusánál jelzi a sofőrként történő érkezést. A sofőri megbízásoknál az oda- és visszaút együtt egy megbízásnak számít. Minden útnál látszik a sofőr/utas státusz és a teljes autó névsora, első helyen az autóval jelölt sofőrrel.
-4. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
-5. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető külön kiemelt blokkban látható.
-6. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
-7. **Autóbeosztás:** vizuálisan elkülönített érkezési és távozási utaslisták, valamint védett, drag-and-drop adminfelület.
-8. **Turnusvezetők:** nyilvános vezetői beosztás és külön adminnézet a kijelölésükhöz.
+1. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő kezdőlap a teljes helyszíni tájékoztatóval, rendezvénytérképpel, pozíciókkal, rádióhasználati útmutatóval és munkavégzési irányelvekkel.
+2. **Dolgozói adatlap:** névválasztó kezdőoldal után egyetlen dolgozó összes turnusa, napokra bontott jelenléti idővonala, folyamatos munkablokkja, érkezése és távozása; az adatlap alján minden egybefüggő munkablokkhoz látható a minimum- és maximum-hőmérséklet, valamint a blokkon belüli legnagyobb csapadékvalószínűség. Az idővonalon az autó csak az egybefüggő munkablokk első turnusánál jelzi a sofőrként történő érkezést. A sofőri megbízásoknál az oda- és visszaút együtt egy megbízásnak számít. Minden útnál látszik a sofőr/utas státusz és a teljes autó névsora, első helyen az autóval jelölt sofőrrel.
+3. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
+4. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető külön kiemelt blokkban látható.
+5. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
+6. **Autóbeosztás:** vizuálisan elkülönített érkezési és távozási utaslisták, valamint védett, drag-and-drop adminfelület.
+7. **Turnusvezetők:** nyilvános vezetői beosztás és külön adminnézet a kijelölésükhöz.
+8. **Időjárás:** Open-Meteo előrejelzés Sirokra 2026. július 22–25. munkanapjaira, minden turnus tényleges naptári időablakára összesítve; hőmérséklettel, hőérzettel, csapadékeséllyel, széllel és lenyitható óránkénti bontással.
 9. **Kontaktlista:** nyilvánosan olvasható, Supabase-ben kezelt telefonszámok és mobilon közvetlen `tel:` hívási linkek.
 10. **Fizetések:** jelszavas személyes nézet, turnusonkénti órakorrekcióval, dinamikus óradíjjal és kizárólag a sofőrnek elszámolt utazási díjjal.
 11. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám. A nézet megmaradt, de nincs a főmenüben; közvetlenül a `#szemelyek` útvonalon érhető el.

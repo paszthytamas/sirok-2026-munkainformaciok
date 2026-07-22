@@ -585,7 +585,7 @@ async function renderInformation() {
   view.innerHTML = `${pageHeading(
     "Kezdőlap",
     "Általános munkainformációk",
-    "A repository data/munkainformaciok.md fájljának közzétett tartalma.",
+    "Minden fontos helyszíni tudnivaló, elvárás és teendő egy helyen.",
   )}<article id="markdown-content" class="card markdown-card"><p>Betöltés…</p></article>`;
   const response = await fetch("./data/info.html", { cache: "no-store" });
   document.querySelector("#markdown-content").innerHTML = response.ok
