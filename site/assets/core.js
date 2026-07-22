@@ -328,3 +328,107 @@ export function suggestCarGroups(schedule, workerIds, capacity = 4) {
 
   return groups;
 }
+
+function datePlusDays(dateText, days) {
+  const date = new Date(`${dateText}T12:00:00Z`);
+  if (Number.isNaN(date.getTime())) throw new Error(`Érvénytelen dátum: ${dateText}`);
+  date.setUTCDate(date.getUTCDate() + days);
+  return date.toISOString().slice(0, 10);
+}
+
+function clockMinutes(clock) {
+  const match = /^(\d{2}):(\d{2})$/.exec(String(clock || ""));
+  if (!match) throw new Error(`Érvénytelen időpont: ${clock}`);
+  const hours = Number(match[1]);
+  const minutes = Number(match[2]);
+  if (hours > 23 || minutes > 59) throw new Error(`Érvénytelen időpont: ${clock}`);
+  return hours * 60 + minutes;
+}
+
+/**
+ * A beosztás munkanapját tényleges naptári időintervallummá alakítja.
+ * A hajnali, 08:00 előtti turnusok még az előző munkanaphoz tartoznak.
+ */
+export function shiftDateTimeRange(operationalDate, shift, workdayStartHour = 8) {
+  const startMinutes = clockMinutes(shift?.start);
+  const endMinutes = clockMinutes(shift?.end);
+  const startDate = datePlusDays(operationalDate, startMinutes < workdayStartHour * 60 ? 1 : 0);
+  const endDate = datePlusDays(startDate, endMinutes <= startMinutes ? 1 : 0);
+  return {
+    start: `${startDate}T${shift.start}`,
+    end: `${endDate}T${shift.end}`,
+  };
+}
+
+function weatherSeverity(code) {
+  const numericCode = Number(code);
+  if ([95, 96, 99].includes(numericCode)) return 9;
+  if ([65, 67, 75, 82, 86].includes(numericCode)) return 8;
+  if ([63, 66, 73, 81, 85].includes(numericCode)) return 7;
+  if ([61, 71, 77, 80].includes(numericCode)) return 6;
+  if ([51, 53, 55, 56, 57].includes(numericCode)) return 5;
+  if ([45, 48].includes(numericCode)) return 4;
+  if (numericCode === 3) return 3;
+  if (numericCode === 2) return 2;
+  if (numericCode === 1) return 1;
+  return 0;
+}
+
+function numericWeatherValue(value) {
+  if (value === null || value === undefined || value === "") return null;
+  const number = Number(value);
+  return Number.isFinite(number) ? number : null;
+}
+
+function weatherExtreme(values, operation) {
+  const numbers = values.map(numericWeatherValue).filter((value) => value !== null);
+  return numbers.length ? operation(...numbers) : null;
+}
+
+/** Turnusonként összegzi az Open-Meteo óránkénti adatait. */
+export function summarizeWeatherShift(hourly, start, end) {
+  if (!Array.isArray(hourly?.time)) return null;
+  const indices = hourly.time
+    .map((time, index) => ({ time, index }))
+    .filter((item) => item.time >= start && item.time < end)
+    .map((item) => item.index);
+  if (!indices.length) return null;
+
+  const values = (field) => indices.map((index) => hourly[field]?.[index]);
+  const weatherCodes = values("weather_code")
+    .map(numericWeatherValue)
+    .filter((value) => value !== null);
+  const codeFrequency = new Map();
+  for (const code of weatherCodes) codeFrequency.set(code, (codeFrequency.get(code) || 0) + 1);
+  const headlineCode = [...codeFrequency.keys()].sort((left, right) =>
+    weatherSeverity(right) - weatherSeverity(left) ||
+    codeFrequency.get(right) - codeFrequency.get(left) ||
+    right - left,
+  )[0] ?? 0;
+
+  const precipitationValues = values("precipitation")
+    .map(numericWeatherValue)
+    .filter((value) => value !== null);
+
+  return {
+    count: indices.length,
+    minTemperature: weatherExtreme(values("temperature_2m"), Math.min),
+    maxTemperature: weatherExtreme(values("temperature_2m"), Math.max),
+    minApparentTemperature: weatherExtreme(values("apparent_temperature"), Math.min),
+    maxApparentTemperature: weatherExtreme(values("apparent_temperature"), Math.max),
+    maxPrecipitationProbability: weatherExtreme(values("precipitation_probability"), Math.max),
+    totalPrecipitation: precipitationValues.length
+      ? precipitationValues.reduce((sum, value) => sum + value, 0)
+      : null,
+    maxWindSpeed: weatherExtreme(values("wind_speed_10m"), Math.max),
+    maxWindGust: weatherExtreme(values("wind_gusts_10m"), Math.max),
+    weatherCode: headlineCode,
+    hours: indices.map((index) => ({
+      time: hourly.time[index],
+      temperature: numericWeatherValue(hourly.temperature_2m?.[index]),
+      precipitationProbability: numericWeatherValue(hourly.precipitation_probability?.[index]),
+      weatherCode: numericWeatherValue(hourly.weather_code?.[index]) ?? 0,
+      windSpeed: numericWeatherValue(hourly.wind_speed_10m?.[index]),
+    })),
+  };
+}

@@ -1,23 +1,24 @@
 # Siroki Motoros találkozó 2026 – munkainformációk
 
-Mobilbarát GitHub Pages-webalkalmazás a biztonsági szolgálat beosztásához, turnusváltásaihoz, autóbeosztásaihoz, általános információihoz és személyes fizetési összesítőihez.
+Mobilbarát GitHub Pages-webalkalmazás a biztonsági szolgálat beosztásához, turnusváltásaihoz, időjárásához, autóbeosztásaihoz, általános információihoz és személyes fizetési összesítőihez.
 
 Részletes admin- és backendtelepítés: [`SUPABASE_SETUP.md`](SUPABASE_SETUP.md).
 
 ## Mit tartalmaz?
 
-1. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
-2. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető külön kiemelt blokkban látható.
+1. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő kezdőlap.
+2. **Időjárás:** Open-Meteo előrejelzés Sirokra 2026. július 22–25. munkanapjaira, minden turnus tényleges naptári időablakára összesítve; hőmérséklettel, hőérzettel, csapadékeséllyel, széllel és lenyitható óránkénti bontással.
 3. **Dolgozói adatlap:** névválasztó kezdőoldal után egyetlen dolgozó összes turnusa, napokra bontott jelenléti idővonala, folyamatos munkablokkja, érkezése és távozása; az idővonalon az autó csak az egybefüggő munkablokk első turnusánál jelzi a sofőrként történő érkezést. A sofőri megbízásoknál az oda- és visszaút együtt egy megbízásnak számít. Minden útnál látszik a sofőr/utas státusz és a teljes autó névsora, első helyen az autóval jelölt sofőrrel.
-4. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám. A nézet megmaradt, de nincs a főmenüben; közvetlenül a `#szemelyek` útvonalon érhető el.
-5. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
-6. **Utazási javaslat:** automatikusan optimalizált autócsoportok minden érkezési és távozási időpontra. A nézet megmaradt, de nincs a főmenüben; közvetlenül a `#utazasi-javaslat` útvonalon érhető el.
+4. **Heti tábla:** név szerint rendezett beosztás, zöld `x` jelölésekkel.
+5. **Turnuslétszám:** session-alapú checkboxos ellenőrző névsor mindenkiről, akinek az adott turnusban jelen kell lennie; a turnusvezető külön kiemelt blokkban látható.
+6. **Érkezés / távozás:** a közvetlenül megelőző turnushoz képzett, ABC-rendű listák.
 7. **Autóbeosztás:** vizuálisan elkülönített érkezési és távozási utaslisták, valamint védett, drag-and-drop adminfelület.
 8. **Turnusvezetők:** nyilvános vezetői beosztás és külön adminnézet a kijelölésükhöz.
 9. **Kontaktlista:** nyilvánosan olvasható, Supabase-ben kezelt telefonszámok és mobilon közvetlen `tel:` hívási linkek.
-10. **Munkainformációk:** a `data/munkainformaciok.md` fájlból készülő HTML-nézet.
-11. **Fizetések:** jelszavas személyes nézet, turnusonkénti órakorrekcióval, dinamikus óradíjjal és kizárólag a sofőrnek elszámolt utazási díjjal.
-12. **Admin költségösszesítő:** személyenkénti munkadíj, utazási díj és teljes fizetendő összeg, összköltséggel és utanként szerkeszthető sofőri díjakkal.
+10. **Fizetések:** jelszavas személyes nézet, turnusonkénti órakorrekcióval, dinamikus óradíjjal és kizárólag a sofőrnek elszámolt utazási díjjal.
+11. **Személyenként:** turnusok, folyamatos munkablokkok és óraszám. A nézet megmaradt, de nincs a főmenüben; közvetlenül a `#szemelyek` útvonalon érhető el.
+12. **Utazási javaslat:** automatikusan optimalizált autócsoportok minden érkezési és távozási időpontra. A nézet megmaradt, de nincs a főmenüben; közvetlenül a `#utazasi-javaslat` útvonalon érhető el.
+13. **Admin költségösszesítő:** személyenkénti munkadíj, utazási díj és teljes fizetendő összeg, összköltséggel és utanként szerkeszthető sofőri díjakkal.
 
 ## Automatikus utazócsoportok
 

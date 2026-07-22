@@ -8,7 +8,9 @@ import {
   movementCompatibility,
   normalizeCarRows,
   payrollSummary,
+  shiftDateTimeRange,
   suggestCarGroups,
+  summarizeWeatherShift,
   workerArrivalDriverShiftIds,
   workerRideTimeline,
 } from "../site/assets/core.js";
@@ -215,4 +217,42 @@ test("suggestCarGroups keeps everyone exactly once and respects capacity", () =>
   assert.ok(groups.every((group) => group.members.length <= 3));
   assert.deepEqual(groups.map((group) => group.members.length), [3, 2]);
   assert.deepEqual(groups.flatMap((group) => group.members).sort(), ids);
+});
+
+test("shiftDateTimeRange follows the 08:00 operational day boundary", () => {
+  assert.deepEqual(
+    shiftDateTimeRange("2026-07-23", { start: "18:00", end: "03:00" }),
+    { start: "2026-07-23T18:00", end: "2026-07-24T03:00" },
+  );
+  assert.deepEqual(
+    shiftDateTimeRange("2026-07-23", { start: "03:00", end: "08:00" }),
+    { start: "2026-07-24T03:00", end: "2026-07-24T08:00" },
+  );
+  assert.deepEqual(
+    shiftDateTimeRange("2026-07-25", { start: "03:00", end: "10:00" }),
+    { start: "2026-07-26T03:00", end: "2026-07-26T10:00" },
+  );
+});
+
+test("summarizeWeatherShift aggregates only hours inside the shift", () => {
+  const hourly = {
+    time: ["2026-07-23T17:00", "2026-07-23T18:00", "2026-07-23T19:00", "2026-07-23T20:00"],
+    temperature_2m: [30, 26, 24, 22],
+    apparent_temperature: [31, 27, 25, 23],
+    precipitation_probability: [5, 30, 75, 20],
+    precipitation: [0, 0, 1.2, 0.1],
+    weather_code: [0, 2, 95, 3],
+    wind_speed_10m: [8, 12, 22, 15],
+    wind_gusts_10m: [16, 25, 49, 31],
+  };
+  const summary = summarizeWeatherShift(hourly, "2026-07-23T18:00", "2026-07-23T20:00");
+
+  assert.equal(summary.count, 2);
+  assert.equal(summary.minTemperature, 24);
+  assert.equal(summary.maxTemperature, 26);
+  assert.equal(summary.maxPrecipitationProbability, 75);
+  assert.equal(summary.totalPrecipitation, 1.2);
+  assert.equal(summary.maxWindGust, 49);
+  assert.equal(summary.weatherCode, 95);
+  assert.deepEqual(summary.hours.map((hour) => hour.time), ["2026-07-23T18:00", "2026-07-23T19:00"]);
 });
